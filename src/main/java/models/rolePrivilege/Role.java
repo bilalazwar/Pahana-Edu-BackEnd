@@ -7,10 +7,10 @@ public class Role {
     private String name;
     private Set<Privilege> privileges;
 
-    public Role(int id, String name, Set<Privilege> privileges) {
-        this.id = id;
-        this.name = name;
-        this.privileges = privileges;
+    public Role() {
+//        this.id = id;
+//        this.name = name;
+//        this.privileges = privileges;
     }
 
     // Getters and setters

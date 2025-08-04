@@ -4,9 +4,7 @@ public class Privilege {
     private int id;
     private String name;
 
-    public Privilege(int id, String name) {
-        this.id = id;
-        this.name = name;
+    public Privilege() {
     }
 
     // Getters and setters

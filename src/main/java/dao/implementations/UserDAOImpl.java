@@ -19,7 +19,8 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public List<User> getAllUsers() throws Exception {
-        return List.of();
+        return null;
+//        return List.of();
     }
 
     @Override

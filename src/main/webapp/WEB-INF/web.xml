@@ -3,5 +3,16 @@
  "http://java.sun.com/dtd/web-app_2_3.dtd" >
 
 <web-app>
-  <display-name>Archetype Created Web Application</display-name>
+
+  <display-name>PahanaEduBackEnd</display-name>
+<!--  <filter>-->
+<!--    <filter-name>CorsFilter</filter-name>-->
+<!--    <filter-class>filter.CorsFilter</filter-class>-->
+<!--  </filter>-->
+
+<!--  <filter-mapping>-->
+<!--    <filter-name>CorsFilter</filter-name>-->
+<!--    <url-pattern>/*</url-pattern>-->
+<!--  </filter-mapping>-->
+
 </web-app>

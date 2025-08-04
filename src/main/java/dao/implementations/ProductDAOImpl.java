@@ -22,7 +22,8 @@ public class ProductDAOImpl implements ProductDAO {
 
     @Override
     public List<Product> getAllProducts() throws Exception {
-        return List.of();
+//        return List.of();
+        return null;
     }
 
     @Override

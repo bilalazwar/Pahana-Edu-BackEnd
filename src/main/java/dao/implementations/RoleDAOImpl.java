@@ -18,7 +18,8 @@ public class RoleDAOImpl implements DepartmentDAO {
 
     @Override
     public List<Department> getAllDepartments() throws Exception {
-        return List.of();
+//        return List.of();
+        return null;
     }
 
     @Override
