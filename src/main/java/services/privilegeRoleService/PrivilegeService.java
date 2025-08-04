@@ -46,4 +46,32 @@ public class PrivilegeService {
         return privilegeDTOs;
     }
 
+    public String updatePrivilege(PrivilegeDTO privilegeDTO) throws Exception {
+
+        String name = privilegeDTO.getName();
+
+        if (name != null && name.trim().length() > 3) {
+
+            privilegeDAO.updatePrivilege(privilegeDTO);
+            return "Successfully added a privilege";
+        }
+        else {
+            return "unable to add privilege";
+        }
+
+    }
+
+    public String deletePrivilegeById(int id) throws Exception {
+
+        int returnValue = privilegeDAO.deletePrivilegeByID(id);
+
+        if (returnValue == 1) {
+            return "Successfully deleted";
+        }
+        else  {
+            return "unable to delete privilege";
+        }
+
+    }
+
 }

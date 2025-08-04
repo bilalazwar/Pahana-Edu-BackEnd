@@ -2,10 +2,13 @@ package dao.implementations;
 
 import dao.interfaces.DepartmentDAO;
 import dao.interfaces.PrivilegeDAO;
+import dtos.PrivilegeDTO;
+import mapper.PrivilegeMapper;
 import models.departmnet.Department;
 import models.rolePrivilege.Privilege;
 import utils.DBConnectionUtil;
 
+import java.io.Console;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +53,7 @@ public class PrivilegeDAOImpl implements PrivilegeDAO {
     @Override
     public List<Privilege> getAllPrivileges() throws Exception {
 
-        String sql = "SELECT * FROM pahanaedu.privilege";
+        String sql = "SELECT * FROM PahanaEdu.Privilege";
         List<Privilege> dbPrivileges = new ArrayList<>();
 
         try (Connection conn = DBConnectionUtil.getConnection();
@@ -61,7 +64,10 @@ public class PrivilegeDAOImpl implements PrivilegeDAO {
                 int id = rs.getInt("id");
                 String name = rs.getString("name");
                 Privilege privilege = new Privilege();
+                privilege.setId(id);
+                privilege.setName(name);
                 dbPrivileges.add(privilege);
+                System.out.println(privilege);
             }
 
 
@@ -69,13 +75,51 @@ public class PrivilegeDAOImpl implements PrivilegeDAO {
             e.printStackTrace(); // You can later replace this with proper logging
         }
         return dbPrivileges;
+
     }
 
     @Override
-    public void updatePrivilege(Privilege privilege) throws Exception {
+    public int updatePrivilege(PrivilegeDTO privilegeDTO) throws Exception {
 
+        String sql = "UPDATE pahanaedu.privilege SET name = ? WHERE id = ?";
+
+        try (Connection conn = DBConnectionUtil.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            Privilege privilege = PrivilegeMapper.toModel(privilegeDTO);
+
+            stmt.setString(1, privilege.getName());
+            stmt.setInt(2, privilege.getId());
+
+            int rowsUpdated = stmt.executeUpdate();
+
+            return rowsUpdated;
+
+        } catch (SQLException e) {
+            e.printStackTrace(); // You can later replace this with proper logging
+            return 0;
+        }
     }
 
+    @Override
+    public int deletePrivilegeByID(int id) throws Exception {
+
+        String sql = "DELETE FROM pahanaedu.privilege WHERE id = ?";
+
+        try (Connection conn = DBConnectionUtil.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+
+            int rowsUpdated = stmt.executeUpdate();
+
+            return rowsUpdated;
+
+        } catch (SQLException e) {
+            e.printStackTrace(); // You can later replace this with proper logging
+            return 0;
+        }
+    }
     @Override
     public void deletePrivilege(int id) throws Exception {
 
