@@ -8,9 +8,6 @@ public class Role {
     private Set<Privilege> privileges;
 
     public Role() {
-//        this.id = id;
-//        this.name = name;
-//        this.privileges = privileges;
     }
 
     // Getters and setters
