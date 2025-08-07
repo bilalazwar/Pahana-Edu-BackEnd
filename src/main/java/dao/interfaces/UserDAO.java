@@ -11,8 +11,8 @@ public interface UserDAO {
     List<User> getAllUsers() throws Exception;
     void updateUser(User user) throws Exception;
     void deleteUser(int id) throws Exception;
+    boolean verifyUserPassword(String username, String enteredPassword) throws Exception;
+    void updatePassword(int userId, String newPassword) throws Exception;
 
-    // Many-to-many handling
-    void addRoleToUser(int userId, int roleId) throws Exception;
-    void removeRoleFromUser(int userId, int roleId) throws Exception;
+
 }

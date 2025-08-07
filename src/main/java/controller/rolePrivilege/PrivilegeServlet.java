@@ -1,4 +1,4 @@
-package controller.rolePrivilegeController;
+package controller.rolePrivilege;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dao.implementations.PrivilegeDAOImpl;

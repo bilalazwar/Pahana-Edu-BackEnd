@@ -10,24 +10,27 @@ public class DBConnectionUtil {
     private static final String JDBC_USERNAME = "root";
     private static final String JDBC_PASSWORD = "root123";
 
-    // Static block to load MySQL drivers
-    static {
+    private static DBConnectionUtil instance;
+    private Connection connection;
+
+    private DBConnectionUtil() throws SQLException {
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver"); // MySQL 8+ driver class
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            this.connection = DriverManager.getConnection(JDBC_URL, JDBC_USERNAME, JDBC_PASSWORD);
+            System.out.println("Connected to database successfully!");
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            throw new SQLException("JDBC Driver not found", e);
         }
     }
 
-    // Method to get a connection
-    public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(JDBC_URL, JDBC_USERNAME, JDBC_PASSWORD);
+    public static synchronized DBConnectionUtil getInstance() throws SQLException {
+        if (instance == null || instance.getConnection().isClosed()) {
+            instance = new DBConnectionUtil();
+        }
+        return instance;
     }
 
-    // Optional: Helper method to close connection, statement, resultset safely
-    public static void closeConnection(Connection conn) {
-        if (conn != null) {
-            try { conn.close(); } catch (SQLException e) { e.printStackTrace(); }
-        }
+    public Connection getConnection() {
+        return connection;
     }
 }

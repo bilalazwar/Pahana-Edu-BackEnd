@@ -18,7 +18,7 @@ public class RolePrivilegeImpl implements RolePrivilegeDAO {
     public int addPrivilegeToRole(int roleId, int privilegeId) throws Exception {
         String sql = "INSERT INTO role_privilege (role_id, privilege_id) VALUES (?, ?)";
 
-        try (Connection conn = DBConnectionUtil.getConnection();
+        try (Connection conn = DBConnectionUtil.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, roleId);
@@ -36,7 +36,7 @@ public class RolePrivilegeImpl implements RolePrivilegeDAO {
     public int removePrivilegeAndRole(int roleId, int privilegeId) throws Exception {
         String sql = "DELETE FROM role_privilege WHERE role_id = ? AND privilege_id = ?";
 
-        try (Connection conn = DBConnectionUtil.getConnection();
+        try (Connection conn = DBConnectionUtil.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, roleId);
@@ -53,7 +53,7 @@ public class RolePrivilegeImpl implements RolePrivilegeDAO {
     public boolean exists(int roleId, int privilegeId) throws Exception {
         String sql = "SELECT 1 FROM role_privilege WHERE role_id = ? AND privilege_id = ?";
 
-        try (Connection conn = DBConnectionUtil.getConnection();
+        try (Connection conn = DBConnectionUtil.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, roleId);
@@ -73,7 +73,7 @@ public class RolePrivilegeImpl implements RolePrivilegeDAO {
         String sql = "SELECT * FROM role_privilege";
         List<RolePrivilege> rolePrivileges = new ArrayList<>();
 
-        try (Connection conn = DBConnectionUtil.getConnection();
+        try (Connection conn = DBConnectionUtil.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
@@ -94,11 +94,11 @@ public class RolePrivilegeImpl implements RolePrivilegeDAO {
 
     @Override
     public List<Privilege> getPrivilegesByRoleId(int roleId) throws Exception {
-        String sql = "SELECT * FROM RolePrivilege WHERE role_id = ?";
+        String sql = "SELECT * FROM role_privilege WHERE role_id = ?";
 
         List<Privilege> privileges = new ArrayList<>();
 
-        try (Connection conn = DBConnectionUtil.getConnection();
+        try (Connection conn = DBConnectionUtil.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, roleId);

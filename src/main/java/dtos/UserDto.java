@@ -2,20 +2,38 @@ package dtos;
 
 public class UserDto {
 
-    private String name;
+    private int id;
+    private String username;
     private String email;
-    private String role;
+    private String full_name;
+    private int role_id;
+    private boolean isActive;
 
-    // Getter and Setter for name
-    public String getName() {
-        return name;
+    public UserDto(int id, String username, String email, String full_name, int role_id, boolean isActive) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.full_name = full_name;
+        this.role_id = role_id;
+        this.isActive = isActive;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public int getId() {
+        return id;
     }
 
-    // Getter and Setter for email
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     public String getEmail() {
         return email;
     }
@@ -24,12 +42,27 @@ public class UserDto {
         this.email = email;
     }
 
-    // Getter and Setter for role
-    public String getRole() {
-        return role;
+    public String getFull_name() {
+        return full_name;
     }
 
-    public void setRole(String role) {
-        this.role = role;
+    public void setFull_name(String full_name) {
+        this.full_name = full_name;
+    }
+
+    public int getRole_id() {
+        return role_id;
+    }
+
+    public void setRole_id(int role_id) {
+        this.role_id = role_id;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
     }
 }

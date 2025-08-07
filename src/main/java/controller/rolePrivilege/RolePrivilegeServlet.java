@@ -1,9 +1,7 @@
-package controller.rolePrivilegeController;
+package controller.rolePrivilege;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dao.implementations.PrivilegeDAOImpl;
 import dao.implementations.RolePrivilegeImpl;
-import dao.interfaces.PrivilegeDAO;
 import dao.interfaces.RolePrivilegeDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -11,7 +9,6 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import models.rolePrivilege.RolePrivilege;
-import services.privilegeRoleService.PrivilegeService;
 import services.privilegeRoleService.RolePrivilegeService;
 
 import java.io.IOException;

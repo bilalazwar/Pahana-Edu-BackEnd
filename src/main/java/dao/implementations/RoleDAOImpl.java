@@ -20,7 +20,7 @@ public class RoleDAOImpl implements RoleDAO {
     public void addRole(String roleName) throws Exception {
         String sql = "INSERT INTO PahanaEdu.Role (name) VALUES (?)";
 
-        try (Connection conn = DBConnectionUtil.getConnection();
+        try (Connection conn = DBConnectionUtil.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, roleName);
@@ -39,18 +39,13 @@ public class RoleDAOImpl implements RoleDAO {
         String sql = "SELECT * FROM role";
         List<Role> roles = new ArrayList<>();
 
-        try (Connection conn = DBConnectionUtil.getConnection();
+        try (Connection conn = DBConnectionUtil.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
-                Role role = new Role();
-                int roleId = rs.getInt("id");
-                role.setId(roleId);
-                role.setName(rs.getString("name"));
-//                role.setPrivileges(getPrivilegesByRoleId(roleId));
-
-                roles.add(role);
+                //Role role = new Role(rs.getInt("id"), rs.getString("name"));
+                roles.add(new Role(rs.getInt("id"), rs.getString("name")));
             }
         }
 
@@ -61,7 +56,7 @@ public class RoleDAOImpl implements RoleDAO {
     public void updateRole(Role role) throws Exception {
         String sql = "UPDATE role SET name = ? WHERE id = ?";
 
-        try (Connection conn = DBConnectionUtil.getConnection();
+        try (Connection conn = DBConnectionUtil.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, role.getName());
@@ -79,7 +74,7 @@ public class RoleDAOImpl implements RoleDAO {
         String sql = "DELETE FROM role WHERE id = ?";
         int affectedRows = 0;
 
-        try (Connection conn = DBConnectionUtil.getConnection();
+        try (Connection conn = DBConnectionUtil.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, id);
