@@ -8,9 +8,7 @@ import java.util.Set;
 
 public class Staff extends User {
 
-    public Staff(int id, String username, String password, int role_id, String full_name, String email,
-                   LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime lastLogin, boolean isActive) {
+    public Staff() {
 
-        super(id, username, password, role_id, full_name, email, createdAt, updatedAt, lastLogin, isActive);
     }
 }

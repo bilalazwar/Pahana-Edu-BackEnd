@@ -9,6 +9,8 @@ import models.person.UserType;
 import models.rolePrivilege.Role;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserMapper {
 
@@ -16,72 +18,62 @@ public class UserMapper {
     public static UserDto toDTO(User user) {
         if (user == null) return null;
 
-        return new UserDto(
-                user.getId(),
-                user.getUsername(),
-                user.getEmail(),
-                user.getFull_name(),
-                user.getRole_id(),
-                user.isActive()
-        );
+        UserDto dto = new UserDto();
+        dto.setId(user.getId());
+        dto.setUsername(user.getUsername());
+        dto.setEmail(user.getEmail());
+        dto.setFull_name(user.getFull_name());
+        dto.setRole_id(user.getRole_id());
+        dto.setActive(user.isActive());
+
+        return dto;
     }
+
+    public static List<UserDto> toDTO(List<User> users) {
+        if (users == null) return null;
+
+        List<UserDto> dtoList = new ArrayList<>();
+
+        for (User user : users) {
+            dtoList.add(toDTO(user));
+        }
+        return dtoList;
+    }
+
+
+
+
     // DTO -> Domain (assumes UserType is known)
     public static User toDomain(UserDto userDto, UserType userType) {
         if (userDto == null) return null;
 
-        int id = userDto.getId();
-        String username = userDto.getUsername();
-        int role_id = userDto.getRole_id();
-        String email = userDto.getEmail();
-        String fullname = userDto.getFull_name();
-        boolean isActive = userDto.isActive();
-        LocalDateTime now = LocalDateTime.now();
+        User user;
 
         switch (userType) {
             case ADMIN:
-                return new Admin(
-                        id,
-                        username,
-                        "", // password not available in DTO
-                        role_id,
-                        fullname,
-                        email,
-                        now, // createdAt
-                        now, // updatedAt
-                        null, // lastLogin
-                        isActive
-                );
-
+                user = new Admin();
+                break;
             case MANAGER:
-                return new Manager(
-                        id,
-                        username,
-                        "",
-                        role_id,
-                        fullname,
-                        email,
-                        now,
-                        now,
-                        null,
-                        isActive
-                );
-
+                user = new Manager();
+                break;
             case STAFF:
-                return new Staff(
-                        id,
-                        username,
-                        "",
-                        role_id,
-                        fullname,
-                        email,
-                        now,
-                        now,
-                        null,
-                        isActive
-                );
-
+                user = new Staff();
+                break;
             default:
                 throw new IllegalArgumentException("Invalid user type: " + userType);
         }
+
+        user.setId(userDto.getId());
+        user.setUsername(userDto.getUsername());
+        user.setPassword(""); // password not available in DTO
+        user.setRole_id(userDto.getRole_id());
+        user.setFull_name(userDto.getFull_name());
+        user.setEmail(userDto.getEmail());
+        user.setCreatedAt(LocalDateTime.now());
+        user.setUpdatedAt(LocalDateTime.now());
+        user.setLastLogin(null);
+        user.setActive(userDto.isActive());
+
+        return user;
     }
 }

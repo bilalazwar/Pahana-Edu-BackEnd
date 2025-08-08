@@ -1,62 +1,175 @@
 package services.userService;
 
-import dao.implementations.UserImpl;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import dao.implementations.UserDAOImpl;
 import dao.interfaces.UserDAO;
+import dtos.UserDto;
+import dtos.UserRegistrationDto;
+import factory.UserFactory;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import mapper.UserMapper;
 import models.parent.User;
+import models.person.UserType;
 import utils.PasswordUtil;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.regex.Pattern;
 
 public class UserService {
 
     private final UserDAO userDAO;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public UserService() {
-        this.userDAO = new UserImpl(); // You can inject this via constructor if needed
+        this.userDAO = new UserDAOImpl(); // You can inject this via constructor if needed
     }
 
-    // Register a new user
-    public void registerUser(User user) throws Exception {
-        validateUser(user, true); // true = check password too
+    public User returUser(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-        String hashedPassword = PasswordUtil.hashPassword(user.getPassword());
-        user.setPassword(hashedPassword);
+        UserRegistrationDto userRegistrationDto = objectMapper.readValue(request.getReader(), UserRegistrationDto.class);
+        User user;
+        UserType userType;
 
+        switch (userRegistrationDto.getRole_id()) {
+            case 1:  // Admin
+                userType = UserType.ADMIN;
+                break;
+            case 2:  // Manager
+                userType = UserType.MANAGER;
+                break;
+            case 3:  // Staff
+                userType = UserType.STAFF;
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid role_id:");
+        }
+
+        user = UserFactory.createUser(userType,userRegistrationDto.getId(),
+                userRegistrationDto.getUsername(),
+                userRegistrationDto.getPassword(),
+                userRegistrationDto.getRole_id(),
+                userRegistrationDto.getFull_name(),
+                userRegistrationDto.getEmail(),
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                null,
+                true
+        );
+        System.out.println(user);
+
+        return user;
+    }
+
+    public void registerUser(HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+        UserRegistrationDto userRegistrationDto = objectMapper.readValue(request.getReader(), UserRegistrationDto.class);
+        User user;
+        UserType userType;
+
+        switch (userRegistrationDto.getRole_id()) {
+            case 1:  // Admin
+                userType = UserType.MANAGER;
+                break;
+            case 2:  // Manager
+                userType = UserType.MANAGER;
+                break;
+            case 3:  // Staff
+                userType = UserType.MANAGER;
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid role_id:");
+        }
+
+        user = UserFactory.createUser(userType,userRegistrationDto.getId(),
+                userRegistrationDto.getUsername(),
+                userRegistrationDto.getPassword(),
+                userRegistrationDto.getRole_id(),
+                userRegistrationDto.getFull_name(),
+                userRegistrationDto.getEmail(),
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                null,
+                true
+        );
+
+        validateUser(user, false);
+        user.setPassword(PasswordUtil.hashPassword(user.getPassword()));
         userDAO.addUser(user);
+
+        System.out.println(user);
     }
 
     // Authenticate user login
-    public boolean login(String username, String rawPassword) throws Exception {
-        if (username == null || username.isEmpty())
+    public boolean login(HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+        User user = returUser(request,response);
+        System.out.println(user);
+
+        if (user.getUsername() == null || user.getUsername().isEmpty())
             throw new IllegalArgumentException("Username cannot be empty");
-        if (rawPassword == null || rawPassword.isEmpty())
+        if (user.getPassword() == null || user.getPassword().isEmpty())
             throw new IllegalArgumentException("Password cannot be empty");
 
-        return userDAO.verifyUserPassword(username, rawPassword);
+        boolean result = userDAO.verifyUserPassword(user.getUsername(), user.getPassword());
+
+        if (result) {
+            return true;
+        }
+        else {
+            throw new IllegalArgumentException("Invalid username or password");
+        }
     }
 
     // Update password (requires user ID and new password)
-    public void updateUserPassword(int userId, String newPassword) throws Exception {
-        validatePassword(newPassword);
-        userDAO.updatePassword(userId, newPassword);
+    public void updateUserPassword(HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+        User user = returUser(request,response);
+
+        if (user.getPassword() == null || user.getPassword().isEmpty()) {
+            throw new IllegalArgumentException("Password cannot be empty");
+        }
+
+        if (user.getId() <= 0) {
+            throw new IllegalArgumentException("User ID cannot be empty");
+        }
+
+        user.setPassword(PasswordUtil.hashPassword(user.getPassword()));
+        userDAO.updatePassword(user.getId(), user.getPassword());
     }
 
     // Fetch user by ID
-    public User getUser(int id) throws Exception {
-        if (id <= 0) throw new IllegalArgumentException("Invalid user ID");
+    public User getUserById(int id) throws Exception {
+
+        if (id <= 0 || !userExists(id)) throw new IllegalArgumentException("Invalid user ID");
         return userDAO.getUserById(id);
+    }
+
+    public List<UserDto> getAllUsers() throws Exception {
+
+        List<User> user = userDAO.getAllUsers();
+        return UserMapper.toDTO(user);
     }
 
     // Delete user
     public void deleteUser(int id) throws Exception {
-        if (id <= 0) throw new IllegalArgumentException("Invalid user ID");
+        if (id <= 0 || !userExists(id)) throw new IllegalArgumentException("Invalid user ID");
+
         userDAO.deleteUser(id);
     }
 
     // Update full user info (must pass full user object)
-    public void updateUser(User user) throws Exception {
+    public void updateUser(HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+        User user = returUser(request,response);
+
         validateUser(user, false); // false = skip password validation
         userDAO.updateUser(user);
+    }
+
+    public boolean userExists(int id) throws Exception {
+        return userDAO.userExist(id);
     }
 
 

@@ -7,16 +7,20 @@ public class UserDto {
     private String email;
     private String full_name;
     private int role_id;
-    private boolean isActive;
+    private boolean active;
 
-    public UserDto(int id, String username, String email, String full_name, int role_id, boolean isActive) {
-        this.id = id;
-        this.username = username;
-        this.email = email;
-        this.full_name = full_name;
-        this.role_id = role_id;
-        this.isActive = isActive;
+//    public UserDto(int id, String username, String email, String full_name, int role_id, boolean active) {
+//        this.id = id;
+//        this.username = username;
+//        this.email = email;
+//        this.full_name = full_name;
+//        this.role_id = role_id;
+//        this.active = active;
+//    }
+
+    public UserDto() {
     }
+
 
     public int getId() {
         return id;
@@ -59,10 +63,10 @@ public class UserDto {
     }
 
     public boolean isActive() {
-        return isActive;
+        return active;
     }
 
     public void setActive(boolean active) {
-        isActive = active;
+        active = active;
     }
 }

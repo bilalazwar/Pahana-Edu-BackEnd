@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserImpl implements UserDAO {
+public class UserDAOImpl implements UserDAO {
 
     private Connection getConnection() throws SQLException {
         return DBConnectionUtil.getInstance().getConnection();
@@ -98,6 +98,19 @@ public class UserImpl implements UserDAO {
     }
 
     @Override
+    public boolean userExist(int id) throws Exception {
+        String sql = "SELECT 1 FROM user WHERE id = ?";
+
+        try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
+            stmt.setInt(1, id);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next(); // If a row exists, user exists
+            }
+        }
+    }
+
+    @Override
     public boolean verifyUserPassword(String username, String enteredPassword) throws Exception {
 
         String sql = "SELECT password FROM user WHERE username = ?";
@@ -111,6 +124,8 @@ public class UserImpl implements UserDAO {
 
                 // Hash the entered password and compare with stored hash
                 String hashedInput = PasswordUtil.hashPassword(enteredPassword);
+                System.out.println("Hash Password " +hashedInput);
+                System.out.println("Entered Password " +storedHash);
 
                 return storedHash.equals(hashedInput);  // If the hashes match, the password is correct
             }
@@ -141,7 +156,7 @@ public class UserImpl implements UserDAO {
         int id = rs.getInt("id");
         String username = rs.getString("username");
         String password = rs.getString("password");
-        int role_id = rs.getInt("role");
+        int role_id = rs.getInt("role_id");
         String full_name = rs.getString("full_name");
         String email = rs.getString("email");
         LocalDateTime createdAt = rs.getTimestamp("created_at").toLocalDateTime();
