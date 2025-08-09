@@ -17,8 +17,8 @@ import java.util.List;
 @WebServlet("/products")
 public class ProductServlet extends HttpServlet {
 
-    ProductDAOImpl productDAO = new ProductDAOImpl();
-    private final ProductService productService = new ProductService(productDAO);
+    ProductDAOImpl productDAOImpl = new ProductDAOImpl();
+    private final ProductService productService = new ProductService(productDAOImpl);
     private final ObjectMapper objectMapper = new ObjectMapper(); // Jackson for JSON
 
     //    POST /products?action=updatePassword
@@ -40,6 +40,8 @@ public class ProductServlet extends HttpServlet {
         }
 
     }
+
+
     //    GET /products?action=getProductById  -- http://localhost:8080/PahanaEduBackEnd/products?action=getProductById&id=1
     //    GET /products?action=getProductByBarcode  -- http://localhost:8080/PahanaEduBackEnd/products?action=getProductByBarcode&barcode=1234567890123
     //    GET /products?action=getProductQuantity   -- http://localhost:8080/PahanaEduBackEnd/products?action=getProductQuantity&id=5
