@@ -106,8 +106,8 @@ public class ProductServlet extends HttpServlet {
         }
     }
 
-//  http://localhost:8080/PahanaEduBackEnd/products?action=updateProduct
-//  http://localhost:8080/PahanaEduBackEnd/productsaction=updateProductQuantity&id=123&quantity=75
+//    PUT   http://localhost:8080/PahanaEduBackEnd/products?action=updateProduct
+//  http://localhost:8080/PahanaEduBackEnd/products?action=updateProductQuantity&id=123&quantity=75
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -125,7 +125,7 @@ public class ProductServlet extends HttpServlet {
                 switch (action) {
                     case "updateProduct":
                         ProductDto productDto = objectMapper.readValue(request.getReader(), ProductDto.class);
-                        productService.updateProduct(productDto);
+                        productService.updateProduct(productDto, Integer.parseInt(idParam));
                         response.getWriter().write("{\"message\": \"Product details updated successfully\"}");
                         break;
                     case "updateProductQuantity":
@@ -137,7 +137,6 @@ public class ProductServlet extends HttpServlet {
                         response.getWriter().write("{\"error\": \"Unknown action: " + action + "\"}");
                         break;
                 }
-
             }
         }
         catch (Exception ex) {

@@ -99,10 +99,10 @@ public class ProductDAOImpl implements ProductDAO {
     }
 
     @Override
-    public void updateProduct(Product product) throws Exception {
+    public void updateProduct(Product product, int id) throws Exception {
 
         String sql = "UPDATE product SET name = ?, description = ?, type = ?, author = ?, publisher = ?, isbn = ?, " +
-                "language = ?, price = ?, discount = ?, quantity = ?, is_active = ?, is_deleted = ?, " +
+                "language = ?, barcode = ?, price = ?, discount = ?, quantity = ?, is_active = ?, is_deleted = ?, " +
                 "cost_price = ?, internal_notes = ?, updated_at = ? WHERE id = ?";
 
         try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
@@ -113,15 +113,16 @@ public class ProductDAOImpl implements ProductDAO {
             stmt.setString(5, product.getPublisher());
             stmt.setString(6, product.getIsbn());
             stmt.setString(7, product.getLanguage());
-            stmt.setDouble(8, product.getPrice());
-            stmt.setDouble(9, product.getDiscount());
-            stmt.setInt(10, product.getQuantity());
-            stmt.setBoolean(11, product.isActive());
-            stmt.setBoolean(12, product.isDeleted());
-            stmt.setDouble(13, product.getCostPrice());
-            stmt.setString(14, product.getInternalNotes());
-            stmt.setTimestamp(15, Timestamp.valueOf(product.getUpdatedAt()));
-            stmt.setInt(16, product.getId());
+            stmt.setLong(8, product.getBarcode());  // Assuming barcode is a string
+            stmt.setDouble(9, product.getPrice());
+            stmt.setDouble(10, product.getDiscount());  // Corrected index
+            stmt.setInt(11, product.getQuantity());
+            stmt.setBoolean(12, product.isActive());
+            stmt.setBoolean(13, product.isDeleted());
+            stmt.setDouble(14, product.getCostPrice());
+            stmt.setString(15, product.getInternalNotes());
+            stmt.setTimestamp(16, Timestamp.valueOf(LocalDateTime.now()));
+            stmt.setInt(17, id);  // Corrected index for id
 
             stmt.executeUpdate();
         }
@@ -194,6 +195,7 @@ public class ProductDAOImpl implements ProductDAO {
         product.setPublisher(rs.getString("publisher"));
         product.setIsbn(rs.getString("isbn"));
         product.setLanguage(rs.getString("language"));
+        product.setBarcode(rs.getLong("barcode"));
 
         product.setPrice(rs.getDouble("price"));
         product.setDiscount(rs.getDouble("discount"));
