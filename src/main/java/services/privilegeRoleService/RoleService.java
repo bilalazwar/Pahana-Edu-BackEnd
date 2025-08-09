@@ -36,9 +36,4 @@ public class RoleService {
         }
         return roleDAO.deleteRoleById(id);
     }
-
-
-
-
-
 }

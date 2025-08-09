@@ -1,14 +1,11 @@
 package dao.implementations;
 
-import dao.interfaces.DepartmentDAO;
 import dao.interfaces.PrivilegeDAO;
 import dtos.PrivilegeDTO;
 import mapper.PrivilegeMapper;
-import models.departmnet.Department;
 import models.rolePrivilege.Privilege;
 import utils.DBConnectionUtil;
 
-import java.io.Console;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +14,7 @@ public class PrivilegeDAOImpl implements PrivilegeDAO {
 
     @Override
     public void addPrivilege(Privilege privilege) throws Exception {
-        String sql = "INSERT INTO pahanaedu.privilege (name) VALUES (?)";
+        String sql = "INSERT INTO PrivilegeS (name) VALUES (?)";
 
         try (Connection conn = DBConnectionUtil.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) { //stmt: The PreparedStatement object that will hold the SQL query and allow you to set values and execute it.
@@ -34,7 +31,7 @@ public class PrivilegeDAOImpl implements PrivilegeDAO {
     @Override
     public Privilege getPrivilegeById(int id) throws Exception {
 
-        String sql = "SELECT * FROM pahanaedu.privilege where id = ?";
+        String sql = "SELECT * FROM PrivilegeS where id = ?";
 
         try (Connection conn = DBConnectionUtil.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) { //stmt: The PreparedStatement object that will hold the SQL query and allow you to set values and execute it.
@@ -53,7 +50,7 @@ public class PrivilegeDAOImpl implements PrivilegeDAO {
     @Override
     public List<Privilege> getAllPrivileges() throws Exception {
 
-        String sql = "SELECT * FROM PahanaEdu.Privilege";
+        String sql = "SELECT * FROM PrivilegeS";
         List<Privilege> dbPrivileges = new ArrayList<>();
 
         try {
@@ -84,7 +81,7 @@ public class PrivilegeDAOImpl implements PrivilegeDAO {
     @Override
     public int updatePrivilege(PrivilegeDTO privilegeDTO) throws Exception {
 
-        String sql = "UPDATE pahanaedu.privilege SET name = ? WHERE id = ?";
+        String sql = "UPDATE PrivilegeS SET name = ? WHERE id = ?";
 
         try (Connection conn = DBConnectionUtil.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -107,7 +104,7 @@ public class PrivilegeDAOImpl implements PrivilegeDAO {
     @Override
     public int deletePrivilegeByID(int id) throws Exception {
 
-        String sql = "DELETE FROM pahanaedu.privilege WHERE id = ?";
+        String sql = "DELETE FROM PrivilegeS WHERE id = ?";
 
         try (Connection conn = DBConnectionUtil.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {

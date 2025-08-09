@@ -1,8 +1,4 @@
 package models.product;
-
-import models.departmnet.SubDepartment;
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class Product {

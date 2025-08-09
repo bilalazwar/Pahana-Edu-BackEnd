@@ -21,7 +21,7 @@ public class UserDAOImpl implements UserDAO {
     @Override
     public void addUser(User user) throws Exception {
 
-        String sql = "INSERT INTO user (id, username, password, role_id, full_name, email, created_at, updated_at, last_login, is_active) " +
+        String sql = "INSERT INTO users (id, username, password, role_id, full_name, email, created_at, updated_at, last_login, is_active) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
@@ -41,7 +41,7 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public User getUserById(int id) throws Exception {
-        String sql = "SELECT * FROM user WHERE id = ?";
+        String sql = "SELECT * FROM users WHERE id = ?";
         try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
@@ -57,7 +57,7 @@ public class UserDAOImpl implements UserDAO {
     @Override
     public List<User> getAllUsers() throws Exception {
         List<User> users = new ArrayList<>();
-        String sql = "SELECT * FROM user";
+        String sql = "SELECT * FROM users";
 
         try (PreparedStatement stmt = getConnection().prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -71,7 +71,7 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public void updateUser(User user) throws Exception {
-        String sql = "UPDATE user SET username = ?, password = ?, role_id = ?, full_name = ?, email = ?, " +
+        String sql = "UPDATE users SET username = ?, password = ?, role_id = ?, full_name = ?, email = ?, " +
                 "updated_at = ?, last_login = ?, is_active = ? WHERE id = ?";
 
         try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
@@ -90,7 +90,7 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public void deleteUser(int id) throws Exception {
-        String sql = "DELETE FROM user WHERE id = ?";
+        String sql = "DELETE FROM users WHERE id = ?";
         try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
             stmt.setInt(1, id);
             stmt.executeUpdate();
@@ -99,7 +99,7 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public boolean userExist(int id) throws Exception {
-        String sql = "SELECT 1 FROM user WHERE id = ?";
+        String sql = "SELECT 1 FROM users WHERE id = ?";
 
         try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
             stmt.setInt(1, id);
@@ -113,7 +113,7 @@ public class UserDAOImpl implements UserDAO {
     @Override
     public boolean verifyUserPassword(String username, String enteredPassword) throws Exception {
 
-        String sql = "SELECT password FROM user WHERE username = ?";
+        String sql = "SELECT password FROM users WHERE username = ?";
 
         try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
             stmt.setString(1, username);
@@ -135,7 +135,7 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public void updatePassword(int userId, String newPassword) throws Exception {
-        String sql = "UPDATE user SET password = ?, updated_at = ? WHERE id = ?";
+        String sql = "UPDATE users SET password = ?, updated_at = ? WHERE id = ?";
 
         try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
             // Hash the new password

@@ -1,13 +1,8 @@
 package dao.implementations;
 
-import dao.interfaces.DepartmentDAO;
 import dao.interfaces.RoleDAO;
-import models.departmnet.Department;
-import models.rolePrivilege.Privilege;
 import models.rolePrivilege.Role;
-import services.privilegeRoleService.PrivilegeService;
 import utils.DBConnectionUtil;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -18,7 +13,7 @@ public class RoleDAOImpl implements RoleDAO {
 
     @Override
     public void addRole(String roleName) throws Exception {
-        String sql = "INSERT INTO PahanaEdu.Role (name) VALUES (?)";
+        String sql = "INSERT INTO Roles (name) VALUES (?)";
 
         try (Connection conn = DBConnectionUtil.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -36,7 +31,7 @@ public class RoleDAOImpl implements RoleDAO {
     @Override
     public List<Role> getAllRoles() throws Exception {
 
-        String sql = "SELECT * FROM role";
+        String sql = "SELECT * FROM Roles";
         List<Role> roles = new ArrayList<>();
 
         try (Connection conn = DBConnectionUtil.getInstance().getConnection();
@@ -44,7 +39,6 @@ public class RoleDAOImpl implements RoleDAO {
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
-                //Role role = new Role(rs.getInt("id"), rs.getString("name"));
                 roles.add(new Role(rs.getInt("id"), rs.getString("name")));
             }
         }
@@ -54,7 +48,7 @@ public class RoleDAOImpl implements RoleDAO {
 
     @Override
     public void updateRole(Role role) throws Exception {
-        String sql = "UPDATE role SET name = ? WHERE id = ?";
+        String sql = "UPDATE Roles SET name = ? WHERE id = ?";
 
         try (Connection conn = DBConnectionUtil.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -71,7 +65,7 @@ public class RoleDAOImpl implements RoleDAO {
 
     @Override
     public String deleteRoleById(int id) throws Exception {
-        String sql = "DELETE FROM role WHERE id = ?";
+        String sql = "DELETE FROM Roles WHERE id = ?";
         int affectedRows = 0;
 
         try (Connection conn = DBConnectionUtil.getInstance().getConnection();

@@ -24,7 +24,7 @@ public class SaleItemsDAOImpl implements SaleItemsDAO {
             stmt.setInt(2, saleItem.getProductId());
             stmt.setInt(3, saleItem.getQuantity());
             stmt.setDouble(4, saleItem.getUnitePrice());
-            stmt.setDouble(5, saleItem.getTotalPrice());
+            stmt.setBigDecimal(5, saleItem.getTotalPrice());
 
             stmt.executeUpdate();
 
@@ -95,7 +95,7 @@ public class SaleItemsDAOImpl implements SaleItemsDAO {
             stmt.setInt(2, saleItem.getProductId());
             stmt.setInt(3, saleItem.getQuantity());
             stmt.setDouble(4, saleItem.getUnitePrice());
-            stmt.setDouble(5, saleItem.getTotalPrice());
+            stmt.setBigDecimal(5, saleItem.getTotalPrice());
             stmt.setInt(6, saleItem.getId());
 
             stmt.executeUpdate();
@@ -138,7 +138,7 @@ public class SaleItemsDAOImpl implements SaleItemsDAO {
         item.setProductId(rs.getInt("product_id"));
         item.setQuantity(rs.getInt("quantity"));
         item.setUnitePrice(rs.getDouble("unit_price"));
-        item.setTotalPrice(rs.getDouble("total_price"));
+        item.setTotalPrice(rs.getBigDecimal("total_price"));
         return item;
     }
 }

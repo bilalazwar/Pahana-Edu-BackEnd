@@ -19,8 +19,8 @@ public class ProductDAOImpl implements ProductDAO {
     @Override
     public void addProduct(Product product) throws Exception {
 
-        String sql = "INSERT INTO product (name, description, type, author, publisher, isbn, language, " +
-                "price, discount, barcode, quantity, is_active, is_deleted, cost_price, internal_notes, created_by, created_at, updated_at) " +
+        String sql = "INSERT INTO products (name, description, type, author, publisher, isbn, language, " +
+                "price, discount, barcode, quantity, active, deleted, cost_price, internal_notes, created_by, created_at, updated_at) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
@@ -51,7 +51,7 @@ public class ProductDAOImpl implements ProductDAO {
 
     @Override
     public Product getProductById(int id) throws Exception {
-        String sql = "SELECT * FROM product WHERE id = ? AND is_deleted = false";
+        String sql = "SELECT * FROM products WHERE id = ? AND deleted = false";
 
         try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
             stmt.setInt(1, id);
@@ -67,7 +67,7 @@ public class ProductDAOImpl implements ProductDAO {
 
     @Override
     public Product getProductByBarcode(Long barcode) throws Exception {
-        String sql = "SELECT * FROM product WHERE barcode = ? AND is_deleted = false";
+        String sql = "SELECT * FROM products WHERE barcode = ? AND deleted = false";
 
         try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
             stmt.setLong(1, barcode);
@@ -83,7 +83,7 @@ public class ProductDAOImpl implements ProductDAO {
 
     @Override
     public List<Product> getAllProducts() throws Exception {
-        String sql = "SELECT * FROM product WHERE is_deleted = false";
+        String sql = "SELECT * FROM products WHERE deleted = false";
 
         List<Product> products = new ArrayList<>();
 
@@ -101,8 +101,8 @@ public class ProductDAOImpl implements ProductDAO {
     @Override
     public void updateProduct(Product product, int id) throws Exception {
 
-        String sql = "UPDATE product SET name = ?, description = ?, type = ?, author = ?, publisher = ?, isbn = ?, " +
-                "language = ?, barcode = ?, price = ?, discount = ?, quantity = ?, is_active = ?, is_deleted = ?, " +
+        String sql = "UPDATE products SET name = ?, description = ?, type = ?, author = ?, publisher = ?, isbn = ?, " +
+                "language = ?, barcode = ?, price = ?, discount = ?, quantity = ?, active = ?, deleted = ?, " +
                 "cost_price = ?, internal_notes = ?, updated_at = ? WHERE id = ?";
 
         try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
@@ -131,7 +131,7 @@ public class ProductDAOImpl implements ProductDAO {
 
     @Override
     public void deleteProduct(int id) throws Exception {
-        String sql = "UPDATE product SET is_deleted = true, updated_at = ? WHERE id = ?";
+        String sql = "UPDATE products SET deleted = true, updated_at = ? WHERE id = ?";
 
         try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
             stmt.setTimestamp(1, Timestamp.valueOf(LocalDateTime.now()));
@@ -143,7 +143,7 @@ public class ProductDAOImpl implements ProductDAO {
 
     @Override
     public int getProductQuantity(int id) throws Exception {
-        String sql = "SELECT quantity FROM product WHERE id = ? AND is_deleted = false";
+        String sql = "SELECT quantity FROM products WHERE id = ? AND deleted = false";
 
         try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
             stmt.setInt(1, id);
@@ -159,7 +159,7 @@ public class ProductDAOImpl implements ProductDAO {
 
     @Override
     public int updateProductQuantity(int id, int quantity) throws Exception {
-        String sql = "UPDATE product SET quantity = ?, updated_at = ? WHERE id = ?";
+        String sql = "UPDATE products SET quantity = ?, updated_at = ? WHERE id = ?";
 
         try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
             stmt.setInt(1, quantity);
@@ -172,7 +172,7 @@ public class ProductDAOImpl implements ProductDAO {
 
     @Override
     public boolean productExists(int id) throws Exception {
-        String sql = "SELECT 1 FROM product WHERE id = ?";
+        String sql = "SELECT 1 FROM products WHERE id = ?";
 
         try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
             stmt.setInt(1, id);
