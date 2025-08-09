@@ -1,36 +1,28 @@
-package models.product;
-
-import models.departmnet.SubDepartment;
+package dtos;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-public class Product {
+public class ProductDto {
     private int id;
     private String name;
     private String description;
-    private String type;             // e.g., "Book", "Stationery"
+    private String type;
     private String author;
     private String publisher;
+    private Long barcode;
     private String isbn;
     private String language;
-    private Long barcode;
-
     private double price;
     private double discount;
     private int quantity;
 
-    // Sensitive/internal fields
-    private boolean active;
-    private boolean deleted;
-    private double costPrice;        // Actual cost to the business (not for customers)
-    private String internalNotes;    // Notes for staff/admin
-    private String createdBy;        // Who added the product
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    public ProductDto() {
 
-    public Product() {
+    }
 
+    public int getId() {
+        return id;
     }
 
     public Long getBarcode() {
@@ -39,10 +31,6 @@ public class Product {
 
     public void setBarcode(Long barcode) {
         this.barcode = barcode;
-    }
-
-    public int getId() {
-        return id;
     }
 
     public void setId(int id) {
@@ -127,61 +115,5 @@ public class Product {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public double getCostPrice() {
-        return costPrice;
-    }
-
-    public void setCostPrice(double costPrice) {
-        this.costPrice = costPrice;
-    }
-
-    public String getInternalNotes() {
-        return internalNotes;
-    }
-
-    public void setInternalNotes(String internalNotes) {
-        this.internalNotes = internalNotes;
-    }
-
-    public String getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
     }
 }

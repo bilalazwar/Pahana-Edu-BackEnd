@@ -17,20 +17,6 @@ public abstract class User {
     private boolean active;
     private int role_id;
 
-//    public User(int id, String username, String password, int role_id, String full_name, String email,
-//                 LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime lastLogin, boolean isActive) {
-//        this.id = id;
-//        this.username = username;
-//        this.password = password;
-//        this.full_name = full_name;
-//        this.email = email;
-//        this.createdAt = createdAt;
-//        this.updatedAt = updatedAt;
-//        this.lastLogin = lastLogin;
-//        this.isActive = isActive;
-//        this.role_id = role_id;
-//    }
-
     public User() {
     }
 

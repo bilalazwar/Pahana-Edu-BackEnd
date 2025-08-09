@@ -1,49 +1,217 @@
 package dao.implementations;
 
-import dao.interfaces.DepartmentDAO;
 import dao.interfaces.ProductDAO;
-import models.departmnet.Department;
 import models.product.Product;
+import utils.DBConnectionUtil;
 
+import java.sql.*;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+
 
 public class ProductDAOImpl implements ProductDAO {
 
+    private Connection getConnection() throws SQLException {
+        return DBConnectionUtil.getInstance().getConnection();
+    }
 
     @Override
     public void addProduct(Product product) throws Exception {
 
+        String sql = "INSERT INTO product (name, description, type, author, publisher, isbn, language, " +
+                "price, discount, barcode, quantity, is_active, is_deleted, cost_price, internal_notes, created_by, created_at, updated_at) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
+            stmt.setString(1, product.getName());
+            stmt.setString(2, product.getDescription());
+            stmt.setString(3, product.getType());
+            stmt.setString(4, product.getAuthor());
+            stmt.setString(5, product.getPublisher());
+            stmt.setString(6, product.getIsbn());
+            stmt.setString(7, product.getLanguage());
+            stmt.setDouble(8, product.getPrice());
+            stmt.setDouble(9, product.getDiscount());
+            stmt.setLong(10, product.getBarcode());           // ✅ Barcode added here
+            stmt.setInt(11, product.getQuantity());
+            stmt.setBoolean(12, product.isActive());
+            stmt.setBoolean(13, product.isDeleted());
+            stmt.setDouble(14, product.getCostPrice());
+            stmt.setString(15, product.getInternalNotes());
+            stmt.setString(16, product.getCreatedBy());
+            stmt.setTimestamp(17, Timestamp.valueOf(LocalDateTime.now()));
+            stmt.setTimestamp(18, Timestamp.valueOf(LocalDateTime.now()));
+
+            stmt.executeUpdate();
+        }
     }
+
+
 
     @Override
     public Product getProductById(int id) throws Exception {
-        return null;
+        String sql = "SELECT * FROM product WHERE id = ? AND is_deleted = false";
+
+        try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
+            stmt.setInt(1, id);
+
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+//                Product product = extractProductFromResultSet(rs);
+                return extractProductFromResultSet(rs);
+            }
+            else return null;
+        }
     }
 
     @Override
+    public Product getProductByBarcode(Long barcode) throws Exception {
+        String sql = "SELECT * FROM product WHERE barcode = ? AND is_deleted = false";
+
+        try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
+            stmt.setLong(1, barcode);
+
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return extractProductFromResultSet(rs);
+            }
+            else return null;
+        }
+    }
+
+
+    @Override
     public List<Product> getAllProducts() throws Exception {
-//        return List.of();
-        return null;
+        String sql = "SELECT * FROM product WHERE is_deleted = false";
+
+        List<Product> products = new ArrayList<>();
+
+        try (PreparedStatement stmt = getConnection().prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                products.add(extractProductFromResultSet(rs));
+            }
+        }
+
+        return products;
     }
 
     @Override
     public void updateProduct(Product product) throws Exception {
 
+        String sql = "UPDATE product SET name = ?, description = ?, type = ?, author = ?, publisher = ?, isbn = ?, " +
+                "language = ?, price = ?, discount = ?, quantity = ?, is_active = ?, is_deleted = ?, " +
+                "cost_price = ?, internal_notes = ?, updated_at = ? WHERE id = ?";
+
+        try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
+            stmt.setString(1, product.getName());
+            stmt.setString(2, product.getDescription());
+            stmt.setString(3, product.getType());
+            stmt.setString(4, product.getAuthor());
+            stmt.setString(5, product.getPublisher());
+            stmt.setString(6, product.getIsbn());
+            stmt.setString(7, product.getLanguage());
+            stmt.setDouble(8, product.getPrice());
+            stmt.setDouble(9, product.getDiscount());
+            stmt.setInt(10, product.getQuantity());
+            stmt.setBoolean(11, product.isActive());
+            stmt.setBoolean(12, product.isDeleted());
+            stmt.setDouble(13, product.getCostPrice());
+            stmt.setString(14, product.getInternalNotes());
+            stmt.setTimestamp(15, Timestamp.valueOf(product.getUpdatedAt()));
+            stmt.setInt(16, product.getId());
+
+            stmt.executeUpdate();
+        }
     }
+
 
     @Override
     public void deleteProduct(int id) throws Exception {
+        String sql = "UPDATE product SET is_deleted = true, updated_at = ? WHERE id = ?";
 
+        try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
+            stmt.setTimestamp(1, Timestamp.valueOf(LocalDateTime.now()));
+            stmt.setInt(2, id);
+
+            stmt.executeUpdate();
+        }
     }
 
     @Override
     public int getProductQuantity(int id) throws Exception {
-        return 0;
+        String sql = "SELECT quantity FROM product WHERE id = ? AND is_deleted = false";
+
+        try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
+            stmt.setInt(1, id);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("quantity");
+                }
+                else return 0;
+            }
+        }
     }
 
     @Override
     public int updateProductQuantity(int id, int quantity) throws Exception {
-        return 0;
+        String sql = "UPDATE product SET quantity = ?, updated_at = ? WHERE id = ?";
+
+        try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
+            stmt.setInt(1, quantity);
+            stmt.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
+            stmt.setInt(3, id);
+
+            return stmt.executeUpdate(); // returns affected row count
+        }
+    }
+
+    @Override
+    public boolean productExists(int id) throws Exception {
+        String sql = "SELECT 1 FROM product WHERE id = ?";
+
+        try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
+            stmt.setInt(1, id);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next(); // If a row exists, user exists
+            }
+        }
+    }
+
+    // Helper method to map result set to product object
+    private Product extractProductFromResultSet(ResultSet rs) throws SQLException {
+        Product product = new Product();
+
+        product.setId(rs.getInt("id"));
+        product.setName(rs.getString("name"));
+        product.setDescription(rs.getString("description"));
+        product.setType(rs.getString("type"));
+        product.setAuthor(rs.getString("author"));
+        product.setPublisher(rs.getString("publisher"));
+        product.setIsbn(rs.getString("isbn"));
+        product.setLanguage(rs.getString("language"));
+
+        product.setPrice(rs.getDouble("price"));
+        product.setDiscount(rs.getDouble("discount"));
+        product.setQuantity(rs.getInt("quantity"));
+
+        product.setActive(rs.getBoolean("is_active"));
+        product.setDeleted(rs.getBoolean("is_deleted"));
+        product.setCostPrice(rs.getDouble("cost_price"));
+        product.setInternalNotes(rs.getString("internal_notes"));
+        product.setCreatedBy(rs.getString("created_by"));
+
+        Timestamp createdAt = rs.getTimestamp("created_at");
+        Timestamp updatedAt = rs.getTimestamp("updated_at");
+        if (createdAt != null) product.setCreatedAt(createdAt.toLocalDateTime());
+        if (updatedAt != null) product.setUpdatedAt(updatedAt.toLocalDateTime());
+
+        return product;
     }
 
 }
+//LocalDateTime.now()
