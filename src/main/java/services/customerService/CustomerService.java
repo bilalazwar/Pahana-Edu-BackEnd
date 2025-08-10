@@ -1,10 +1,7 @@
 package services.customerService;
 
 import dao.interfaces.CustomerDAO;
-import dtos.ProductDto;
-import mapper.ProductMapper;
 import models.customer.Customer;
-import models.product.Product;
 
 import java.util.List;
 

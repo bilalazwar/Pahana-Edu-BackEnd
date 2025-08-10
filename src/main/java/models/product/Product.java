@@ -106,6 +106,9 @@ public class Product {
     }
 
     public void setPrice(double price) {
+        if (price < 0) {
+            throw new IllegalArgumentException("Price cannot be negative.");
+        }
         this.price = price;
     }
 
@@ -170,6 +173,9 @@ public class Product {
     }
 
     public void setCreatedAt(LocalDateTime createdAt) {
+        if (createdAt.isAfter(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Created date cannot be in the future.");
+        }
         this.createdAt = createdAt;
     }
 
@@ -178,6 +184,9 @@ public class Product {
     }
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
+        if (updatedAt.isBefore(this.createdAt)) {
+            throw new IllegalArgumentException("Updated date cannot be before created date.");
+        }
         this.updatedAt = updatedAt;
     }
 }

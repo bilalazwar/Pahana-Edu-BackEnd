@@ -11,7 +11,7 @@ public class SaleItems {
     private BigDecimal totalPrice;
 
     public SaleItems() {
-
+        totalPrice = new BigDecimal(0);
     }
 
     public int getId() {
@@ -43,6 +43,10 @@ public class SaleItems {
     }
 
     public void setQuantity(int quantity) {
+
+        if(quantity > 1000) {
+            throw new IllegalArgumentException("Quantity cannot be greater than 1000");
+        }
         this.quantity = quantity;
     }
 
@@ -51,6 +55,10 @@ public class SaleItems {
     }
 
     public void setUnitePrice(double unitePrice) {
+
+        if(unitePrice < 0) {
+            throw new IllegalArgumentException("Unit price cannot be negative");
+        }
         this.unitePrice = unitePrice;
     }
 
@@ -58,7 +66,10 @@ public class SaleItems {
         return totalPrice;
     }
 
-    public void setTotalPrice(BigDecimal  totalPrice) {
+    public void setTotalPrice(BigDecimal totalPrice) {
+        if (totalPrice != null && totalPrice.compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("Total price cannot be negative");
+        }
         this.totalPrice = totalPrice;
     }
 }

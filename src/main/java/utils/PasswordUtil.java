@@ -4,6 +4,9 @@ import java.security.MessageDigest;
 
 public class PasswordUtil {
     public static String hashPassword(String password) {
+        if (password == null) {
+            throw new IllegalArgumentException("Password cannot be null");
+        }
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             byte[] hash = md.digest(password.getBytes());

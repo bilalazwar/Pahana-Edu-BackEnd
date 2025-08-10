@@ -3,6 +3,9 @@ package utils;
 import junit.framework.TestCase;
 import org.junit.Test;
 
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertThrows;
+
 public class PasswordUtilTest extends TestCase {
 
     @Test
@@ -49,5 +52,27 @@ public class PasswordUtilTest extends TestCase {
 
         assertEquals(64, hash.length()); // SHA-256 produces a 64-character hash
     }
+
+    @Test
+    public void testHashPasswordWithNullInput() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            PasswordUtil.hashPassword(null);
+        });
+    }
+
+    @Test
+    public void testCaseSensitivity() {
+        String lower = "password";
+        String upper = "PASSWORD";
+        assertNotEquals(PasswordUtil.hashPassword(lower), PasswordUtil.hashPassword(upper));
+    }
+
+    @Test
+    public void testWhitespaceSensitiveHashing() {
+        String password1 = "password";
+        String password2 = " password ";
+        assertNotEquals(PasswordUtil.hashPassword(password1), PasswordUtil.hashPassword(password2));
+    }
+
 
 }

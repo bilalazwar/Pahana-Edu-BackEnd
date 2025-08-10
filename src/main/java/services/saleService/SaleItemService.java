@@ -1,9 +1,6 @@
 package services.saleService;
 
 import dao.interfaces.SaleItemsDAO;
-import dtos.ProductDto;
-import mapper.ProductMapper;
-import models.product.Product;
 import models.sale.SaleItems;
 
 import java.math.BigDecimal;

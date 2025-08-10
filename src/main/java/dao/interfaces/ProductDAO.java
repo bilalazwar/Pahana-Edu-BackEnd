@@ -1,6 +1,5 @@
 package dao.interfaces;
 
-import dtos.ProductDto;
 import models.product.Product;
 
 import java.util.List;
