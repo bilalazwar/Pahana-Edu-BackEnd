@@ -41,7 +41,7 @@ public class UserServlet extends HttpServlet {
 
             switch (action) {
                 case "register":
-                    userService.registerUser(request,response);
+                    userService.registerUser(request);
                     response.getWriter().write("{\"message\": \"Registered Successfully\"}");
                     break;
                 case "login":

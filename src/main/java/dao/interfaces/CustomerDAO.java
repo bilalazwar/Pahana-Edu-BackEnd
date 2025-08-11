@@ -10,4 +10,5 @@ public interface CustomerDAO {
     void updateCustomer(Customer customer, int id) throws Exception;
     void deleteCustomer(int id) throws Exception;
     boolean customerExists(int id) throws Exception;
+    int getCustomerCount() throws Exception;
 }

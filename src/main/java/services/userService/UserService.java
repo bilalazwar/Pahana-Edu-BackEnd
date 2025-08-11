@@ -1,16 +1,20 @@
 package services.userService;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dao.implementations.RolePrivilegeImpl;
 import dao.implementations.UserDAOImpl;
+import dao.interfaces.RolePrivilegeDAO;
 import dao.interfaces.UserDAO;
 import dtos.UserDto;
 import dtos.UserRegistrationDto;
 import factory.UserFactory;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import mapper.UserMapper;
 import models.parent.User;
 import models.person.UserType;
+import models.rolePrivilege.Privilege;
 import utils.PasswordUtil;
 
 import java.time.LocalDateTime;
@@ -22,11 +26,14 @@ public class UserService {
     private final UserDAO userDAO;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    private final RolePrivilegeDAO rolePrivilegeDAO;
+
     public UserService() {
         this.userDAO = new UserDAOImpl(); // You can inject this via constructor if needed
+        this.rolePrivilegeDAO = new RolePrivilegeImpl();
     }
 
-    public User returUser(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public User returUser(HttpServletRequest request) throws Exception {
 
         UserRegistrationDto userRegistrationDto = objectMapper.readValue(request.getReader(), UserRegistrationDto.class);
         User user;
@@ -62,7 +69,7 @@ public class UserService {
         return user;
     }
 
-    public void registerUser(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public void registerUser(HttpServletRequest request) throws Exception {
 
         UserRegistrationDto userRegistrationDto = objectMapper.readValue(request.getReader(), UserRegistrationDto.class);
         User user;
@@ -104,7 +111,7 @@ public class UserService {
     // Authenticate user login
     public boolean login(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-        User user = returUser(request,response);
+        User user = returUser(request);
         System.out.println(user);
 
         if (user.getUsername() == null || user.getUsername().isEmpty())
@@ -115,6 +122,16 @@ public class UserService {
         boolean result = userDAO.verifyUserPassword(user.getUsername(), user.getPassword());
 
         if (result) {
+            // ✅ Create session
+            HttpSession session = request.getSession(true);
+            session.setAttribute("username", user.getUsername());
+            session.setMaxInactiveInterval(15 * 60); // 15 minutes
+            session.setAttribute("user_id", user.getId());
+            session.setAttribute("role_id", user.getRole_id());
+
+            List<Privilege> rolePrivileges = rolePrivilegeDAO.getPrivilegesByRoleId(user.getRole_id());
+            session.setAttribute("rolePrivileges", rolePrivileges);
+
             return true;
         }
         else {
@@ -125,7 +142,7 @@ public class UserService {
     // Update password (requires user ID and new password)
     public void updateUserPassword(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-        User user = returUser(request,response);
+        User user = returUser(request);
 
         if (user.getPassword() == null || user.getPassword().isEmpty()) {
             throw new IllegalArgumentException("Password cannot be empty");
@@ -162,7 +179,7 @@ public class UserService {
     // Update full user info (must pass full user object)
     public void updateUser(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-        User user = returUser(request,response);
+        User user = returUser(request);
 
         validateUser(user, false); // false = skip password validation
         userDAO.updateUser(user);

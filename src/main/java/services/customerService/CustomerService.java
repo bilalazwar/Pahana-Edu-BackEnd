@@ -52,4 +52,8 @@ public class CustomerService {
         }
         return customerDAO.customerExists(id);
     }
+
+    public int getCustomerCount() throws Exception {
+        return customerDAO.getCustomerCount();
+    }
 }

@@ -69,36 +69,6 @@ public class SaleServlet extends HttpServlet {
         }
     }
 
-//    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-//
-//        response.setContentType("application/json");
-//        response.setCharacterEncoding("UTF-8");
-//
-//        try {
-//            Sale sale = objectMapper.readValue(request.getReader(), Sale.class);
-//
-//            // 1. Save sale (inserts & sets generated ID)
-//            saleService.createSale(sale);
-//
-//            // 2. Save sale items
-//            if (sale.getItems() != null && !sale.getItems().isEmpty()) {
-//                for (SaleItems item : sale.getItems()) {
-//                    item.setSaleId(sale.getId()); //  Very important where giving the Sale ID
-//                    saleItemService.addSaleItem(item); // delegate to the other service
-//                }
-//            }
-//
-//            String json = "{ \"message\": \"Sale created successfully\", \"saleId\": " + sale.getId() + " }";
-//            response.setStatus(HttpServletResponse.SC_CREATED);
-//            response.getWriter().write(json);
-//        }
-//        catch (Exception ex) {
-//            ex.printStackTrace();
-//            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-//            response.getWriter().write("{\"error\": \"Server error: " + ex.getMessage().replace("\"", "\\\"") + "\"}");
-//        }
-//    }
-
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         response.setContentType("application/json");
@@ -110,8 +80,14 @@ public class SaleServlet extends HttpServlet {
             String userIdParam = request.getParameter("userId");
             String startDateParam = request.getParameter("startDate");
             String endDateParam = request.getParameter("endDate");
+            String countParam = request.getParameter("count");
 
-            if (idParam != null) {
+
+            if (countParam != null && countParam.equalsIgnoreCase("true")) {
+                int saleCount = saleService.getSaleCount();
+                response.getWriter().write("{\"count\": " + saleCount + "}");
+            }
+            else if (idParam != null) {
 
                 int id = Integer.parseInt(idParam);
                 Sale sale = saleService.getSaleById(id);

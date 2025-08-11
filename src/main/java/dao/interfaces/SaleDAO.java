@@ -23,6 +23,9 @@ public interface SaleDAO {
     double getTotalSalesAmount() throws SQLException;
     double getTotalSalesByUserId(int userId) throws SQLException;
     double getTotalSalesByCustomerId(int customerId) throws SQLException;
+    int getSaleCount() throws SQLException;
+    int getSaleCountByUserId(int userId) throws SQLException;
+
 }
 
 //        | id | customer_id | sale_date           | total _amount |

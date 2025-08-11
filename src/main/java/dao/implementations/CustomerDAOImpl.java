@@ -107,6 +107,23 @@ public class CustomerDAOImpl implements CustomerDAO {
         }
     }
 
+    @Override
+    public int getCustomerCount() throws SQLException {
+        String sql = "SELECT COUNT(*) FROM customers";
+
+        try (Connection conn = DBConnectionUtil.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next())
+            {
+                return rs.getInt(1);
+            }
+        }
+        return 0;
+    }
+
     // Helper method to map ResultSet to Customer object
     private Customer mapResultSetToCustomer(ResultSet rs) throws SQLException {
         Customer customer = new Customer();

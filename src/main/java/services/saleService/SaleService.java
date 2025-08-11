@@ -163,6 +163,13 @@ public class SaleService {
     }
 
 
+    public int getSaleCount() throws Exception {
 
-
+        try {
+            return saleDAO.getSaleCount();
+        }
+        catch (SQLException e) {
+            throw new Exception("Failed to fetch sale Count " + e.getMessage());
+        }
+    }
 }

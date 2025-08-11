@@ -195,6 +195,35 @@ public class SaleDAOImpl implements SaleDAO {
         return 0;
     }
 
+    @Override
+    public int getSaleCount() throws SQLException {
+        String sql = "SELECT COUNT(*) FROM sales";
+
+        try (PreparedStatement stmt = getConnection().prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        }
+        return 0;
+    }
+
+    @Override
+    public int getSaleCountByUserId(int userId) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM sales WHERE user_id = ?";
+
+        try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        }
+        return 0;
+    }
+
     // Helper method to convert ResultSet to Sale object
     private Sale extractSale(ResultSet rs) throws SQLException {
         Sale sale = new Sale();
