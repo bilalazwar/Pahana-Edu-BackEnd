@@ -21,7 +21,6 @@ public class ProductServlet extends HttpServlet {
     private final ProductService productService = new ProductService(productDAOImpl);
     private final ObjectMapper objectMapper = new ObjectMapper(); // Jackson for JSON
 
-    //    POST /products?action=updatePassword
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -108,8 +107,8 @@ public class ProductServlet extends HttpServlet {
         }
     }
 
-//    PUT   http://localhost:8080/PahanaEduBackEnd/products?action=updateProduct
-//  http://localhost:8080/PahanaEduBackEnd/products?action=updateProductQuantity&id=123&quantity=75
+//    PUT http://localhost:8080/PahanaEduBackEnd/products?action=updateProduct&id={}
+//    PUT http://localhost:8080/PahanaEduBackEnd/products?action=updateProductQuantity&id={}&quantity={}
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -123,15 +122,18 @@ public class ProductServlet extends HttpServlet {
 
 
         try {
-            if (action != null && !action.isEmpty()) {
+            if (action != null && !action.isEmpty() && idParam != null && !idParam.isEmpty()) {
                 switch (action) {
                     case "updateProduct":
-                        ProductDto productDto = objectMapper.readValue(request.getReader(), ProductDto.class);
-                        productService.updateProduct(productDto, Integer.parseInt(idParam));
+                        Product product = objectMapper.readValue(request.getReader(), Product.class);
+                        int id = Integer.parseInt(idParam);
+                        productService.updateProduct(product, id);
+                        response.setStatus(HttpServletResponse.SC_OK);
                         response.getWriter().write("{\"message\": \"Product details updated successfully\"}");
                         break;
                     case "updateProductQuantity":
                         productService.updateProductQuantity(Integer.parseInt(idParam), Integer.parseInt(qtyParam));
+                        response.setStatus(HttpServletResponse.SC_OK);
                         response.getWriter().write("{\"message\": \"Product quantity updated successfully\"}");
                         break;
                     default:
@@ -139,6 +141,10 @@ public class ProductServlet extends HttpServlet {
                         response.getWriter().write("{\"error\": \"Unknown action: " + action + "\"}");
                         break;
                 }
+            }
+            else {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                response.getWriter().write("{\"error\": \"Missing required parameters: action and id\"}");
             }
         }
         catch (Exception ex) {
@@ -148,7 +154,7 @@ public class ProductServlet extends HttpServlet {
         }
     }
 
-//  DELETE /   http://localhost:8080/PahanaEduBackEnd/product?id=123
+//  DELETE /   http://localhost:8080/PahanaEduBackEnd/products?id={}
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

@@ -15,9 +15,34 @@ public class CustomerService {
 
     public void addCustomer(Customer customer) throws Exception {
 
-        if(customer == null){
-            throw new Exception("Product is null");
+        if (customer == null) {
+            throw new IllegalArgumentException("Customer is null");
         }
+
+        // Validate name
+        if (customer.getName() == null || customer.getName().trim().isEmpty()) {
+            throw new IllegalArgumentException("Customer name is required");
+        }
+
+        // Validate email (optional, depending on your logic)
+        if (customer.getEmail() != null && !customer.getEmail().trim().isEmpty()) {
+            String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
+            if (!customer.getEmail().matches(emailRegex)) {
+                throw new IllegalArgumentException("Invalid email format");
+            }
+        }
+
+        // Validate phone number
+        if (customer.getPhone() == null || !customer.getPhone().matches("\\d{10}")) {
+            throw new IllegalArgumentException("Phone number must be exactly 10 digits");
+        }
+
+        // Validate address
+        if (customer.getAddress() == null || customer.getAddress().trim().isEmpty()) {
+            throw new IllegalArgumentException("Customer address is required");
+        }
+
+        // If all validations pass, proceed to DAO
         customerDAO.addCustomer(customer);
     }
 
@@ -29,6 +54,15 @@ public class CustomerService {
         else{
             throw new IllegalArgumentException("Invalid Customer Id.");
         }
+    }
+    public Customer getCustomerByMobileNumber(String mobileNumber) throws Exception {
+
+//        System.out.println("Searching for customer by mobile number : " + mobileNumber);
+        if (mobileNumber == null || !mobileNumber.matches("\\d{10}")) {
+            throw new IllegalArgumentException("Invalid mobile number. It must be exactly 10 digits.");
+        }
+
+        return customerDAO.getCustomerByMobileNumber(mobileNumber);
     }
 
     public List<Customer> getAllCustomer() throws Exception {

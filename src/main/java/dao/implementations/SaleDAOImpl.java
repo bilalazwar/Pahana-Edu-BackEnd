@@ -16,7 +16,7 @@ public class SaleDAOImpl implements SaleDAO {
         return DBConnectionUtil.getInstance().getConnection();
     }
 
-    // this below has to return the sale ID, only then i will be able to add
+    // this below has to return the sale ID, only then I will be able to add
     @Override
     public void addSale(Sale sale) throws SQLException {
         String sql = "INSERT INTO sales (customer_id, user_id, sale_date, total_amount) VALUES (?, ?, ?, ?)";

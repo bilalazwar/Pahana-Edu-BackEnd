@@ -49,13 +49,12 @@ public class ProductService {
         return ProductMapper.toDTO(productDAO.getAllProducts());
     }
 
-    public void updateProduct(ProductDto productDto, int id) throws Exception {
-        if (productDto == null || id <= 0 || !productExists(id)) {
+    public void updateProduct(Product product, int id) throws Exception {
+
+        if (product == null || id <= 0 || !productExists(id)) {
             throw new IllegalArgumentException("Product is null");
         }
-//        System.out.println(productDto.getBarcode());
-        System.out.println(ProductMapper.toDomain(productDto).getBarcode());
-        productDAO.updateProduct(ProductMapper.toDomain(productDto), id);
+        productDAO.updateProduct(product, id);
     }
 
     public void deleteProduct(int id) throws Exception {

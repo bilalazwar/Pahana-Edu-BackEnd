@@ -47,6 +47,24 @@ public class CustomerDAOImpl implements CustomerDAO {
     }
 
     @Override
+    public Customer getCustomerByMobileNumber(String mobileNumber) throws SQLException {
+        String sql = "SELECT * FROM customers WHERE phone = ?";
+        try (Connection conn = DBConnectionUtil.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, mobileNumber);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return mapResultSetToCustomer(rs); // Now the ResultSet has all required fields
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    @Override
     public List<Customer> getAllCustomers() throws SQLException{
         String sql = "SELECT * FROM customers";
         List<Customer> customers = new ArrayList<>();

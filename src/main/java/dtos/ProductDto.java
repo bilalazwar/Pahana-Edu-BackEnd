@@ -1,8 +1,11 @@
 package dtos;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ProductDto {
     private int id;
     private String name;
@@ -16,6 +19,7 @@ public class ProductDto {
     private double price;
     private double discount;
     private int quantity;
+    private double costPrice;
 
     public ProductDto() {
 
@@ -31,6 +35,14 @@ public class ProductDto {
 
     public void setBarcode(Long barcode) {
         this.barcode = barcode;
+    }
+
+    public double getCostPrice() {
+        return costPrice;
+    }
+
+    public void setCostPrice(double costPrice) {
+        this.costPrice = costPrice;
     }
 
     public void setId(int id) {

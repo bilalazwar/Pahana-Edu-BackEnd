@@ -21,7 +21,7 @@ public class ProductDAOImpl implements ProductDAO {
 
         String sql = "INSERT INTO products (name, description, type, author, publisher, isbn, language, " +
                 "price, discount, barcode, quantity, active, deleted, cost_price, internal_notes, created_by, created_at, updated_at) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
 
         try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
             stmt.setString(1, product.getName());
@@ -103,7 +103,7 @@ public class ProductDAOImpl implements ProductDAO {
 
         String sql = "UPDATE products SET name = ?, description = ?, type = ?, author = ?, publisher = ?, isbn = ?, " +
                 "language = ?, barcode = ?, price = ?, discount = ?, quantity = ?, active = ?, deleted = ?, " +
-                "cost_price = ?, internal_notes = ?, updated_at = ? WHERE id = ?";
+                "cost_price = ?, internal_notes = ?, updated_at = ?,  cost_price = ? WHERE id = ?";
 
         try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
             stmt.setString(1, product.getName());
@@ -123,6 +123,7 @@ public class ProductDAOImpl implements ProductDAO {
             stmt.setString(15, product.getInternalNotes());
             stmt.setTimestamp(16, Timestamp.valueOf(LocalDateTime.now()));
             stmt.setInt(17, id);  // Corrected index for id
+            stmt.setInt(18, id);
 
             stmt.executeUpdate();
         }
@@ -201,8 +202,8 @@ public class ProductDAOImpl implements ProductDAO {
         product.setDiscount(rs.getDouble("discount"));
         product.setQuantity(rs.getInt("quantity"));
 
-        product.setActive(rs.getBoolean("is_active"));
-        product.setDeleted(rs.getBoolean("is_deleted"));
+        product.setActive(rs.getBoolean("active"));
+        product.setDeleted(rs.getBoolean("deleted"));
         product.setCostPrice(rs.getDouble("cost_price"));
         product.setInternalNotes(rs.getString("internal_notes"));
         product.setCreatedBy(rs.getString("created_by"));

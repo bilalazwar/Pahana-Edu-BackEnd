@@ -31,7 +31,13 @@ public class SaleService {
         try {
             saleDAO.addSale(sale);
 
-        } catch (SQLException e) {
+            List<SaleItems> saleItemsList = sale.getItems();
+
+            for(SaleItems saleItems : saleItemsList){
+                saleItemsDAO.addSaleItem(saleItems);
+            }
+        }
+        catch (SQLException e) {
             e.printStackTrace(); // Can replace with Logger
             throw new Exception("Failed to create sale: " + e.getMessage());
         }

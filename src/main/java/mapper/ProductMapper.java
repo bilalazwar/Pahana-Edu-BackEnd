@@ -24,6 +24,7 @@ public class ProductMapper {
         dto.setPrice(product.getPrice());
         dto.setDiscount(product.getDiscount());
         dto.setQuantity(product.getQuantity());
+        dto.setCostPrice(product.getCostPrice());
 
         // ❌ Do NOT expose: costPrice, internalNotes, createdBy, isDeleted, etc.
         return dto;
@@ -56,6 +57,7 @@ public class ProductMapper {
         product.setPrice(productDto.getPrice());
         product.setDiscount(productDto.getDiscount());
         product.setQuantity(productDto.getQuantity());
+        product.setCostPrice(productDto.getCostPrice());
 
         // ✅ Set defaults or leave blank for internal fields
 //        product.setActive(true);                     // Default to active

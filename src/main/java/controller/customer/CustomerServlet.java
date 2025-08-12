@@ -16,14 +16,13 @@ import java.util.List;
 @WebServlet("/customers")
 public class CustomerServlet extends HttpServlet {
 
-    CustomerDAOImpl  customerDAOImpl = new CustomerDAOImpl();
+    CustomerDAOImpl customerDAOImpl = new CustomerDAOImpl();
     private final CustomerService customerService = new CustomerService(customerDAOImpl);
     private final ObjectMapper objectMapper = new ObjectMapper(); // Jackson for JSON
 
-//  POST/   http://localhost:8080/PahanaEduBackEnd/customers
+    // POST http://localhost:8080/PahanaEduBackEnd/customers
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
@@ -38,43 +37,49 @@ public class CustomerServlet extends HttpServlet {
         }
     }
 
-
+    // GET http://localhost:8080/PahanaEduBackEnd/customers (get all)
+    // GET http://localhost:8080/PahanaEduBackEnd/customers/{id} (get by id)
+    // GET http://localhost:8080/PahanaEduBackEnd/customers?mobileNumber={} (get by mobile)
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
-        String action = request.getParameter("action");     // Example
-        String idParam = request.getParameter("id");
+        String pathInfo = request.getPathInfo();
+        String mobileNumberParam = request.getParameter("mobileNumber");
 
         try {
-            if (action != null && !action.isEmpty()) {
-                switch (action) {
-                    case "getCustomerById":
-                        if (idParam != null && !idParam.isEmpty()) {
-                            int id = Integer.parseInt(idParam);
-                            Customer customer = customerService.getCustomerById(id);
-                            if (customer != null) {
-                                response.getWriter().write(objectMapper.writeValueAsString(customer));
-                            } else {
-                                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Customer not found with ID: " + id);
-                            }
-                        } else {
-                            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Customer ID is required.");
-                        }
-                        break;
-                    case "getAllCustomers":
-                        List<Customer> customerList = customerService.getAllCustomer();
-                        response.getWriter().write(objectMapper.writeValueAsString(customerList));
-                        break;
-
-                    default:
-                        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid action parameter.");
-                        break;
-
+            if (pathInfo != null && !pathInfo.isEmpty()) {
+                // Handle GET by ID (e.g., /customers/123)
+                String[] pathParts = pathInfo.split("/");
+                if (pathParts.length > 1) {
+                    int id = Integer.parseInt(pathParts[1]);
+                    Customer customer = customerService.getCustomerById(id);
+                    if (customer != null) {
+                        response.getWriter().write(objectMapper.writeValueAsString(customer));
+                    } else {
+                        response.sendError(HttpServletResponse.SC_NOT_FOUND, "Customer not found with ID: " + id);
+                    }
                 }
             }
+            else if (mobileNumberParam != null && !mobileNumberParam.isEmpty()) {
+                // Handle GET by mobile number (e.g., /customers?mobileNumber=1234567890)
+                Customer customer = customerService.getCustomerByMobileNumber(mobileNumberParam);
+                if (customer != null) {
+                    response.getWriter().write(objectMapper.writeValueAsString(customer));
+                } else {
+                    response.sendError(HttpServletResponse.SC_NOT_FOUND,
+                            "Customer not found with Mobile Number: " + mobileNumberParam);
+                }
+            }
+            else {
+                // Handle GET all customers (e.g., /customers)
+                List<Customer> customerList = customerService.getAllCustomer();
+                response.getWriter().write(objectMapper.writeValueAsString(customerList));
+            }
+        }
+        catch (NumberFormatException e) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid ID format");
         }
         catch (Exception ex) {
             ex.printStackTrace();
@@ -83,18 +88,24 @@ public class CustomerServlet extends HttpServlet {
         }
     }
 
+    // PUT http://localhost:8080/PahanaEduBackEnd/customers/{id}
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
-        String idParam = request.getParameter("id");
+        String pathInfo = request.getPathInfo();
 
         try {
-            if(idParam != null && !idParam.isEmpty()) {
-                int id = Integer.parseInt(idParam);
-                customerService.updateCustomer(objectMapper.readValue(request.getReader(), Customer.class),id);
-                response.getWriter().write("{\"message\": \"Customer details updated successfully\"}");
+            if (pathInfo != null && !pathInfo.isEmpty()) {
+                String[] pathParts = pathInfo.split("/");
+                if (pathParts.length > 1) {
+                    int id = Integer.parseInt(pathParts[1]);
+                    customerService.updateCustomer(objectMapper.readValue(request.getReader(), Customer.class), id);
+                    response.getWriter().write("{\"message\": \"Customer details updated successfully\"}");
+                }
+            } else {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Customer ID is required.");
             }
         }
         catch (Exception ex) {
@@ -104,18 +115,24 @@ public class CustomerServlet extends HttpServlet {
         }
     }
 
+    // DELETE http://localhost:8080/PahanaEduBackEnd/customers/{id}
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
-        String idParam = request.getParameter("id");
+        String pathInfo = request.getPathInfo();
 
         try {
-            if(idParam != null && !idParam.isEmpty()) {
-                int id = Integer.parseInt(idParam);
-                customerService.deleteCustomer(id);
-                response.getWriter().write("{\"message\": \"Customer deleted successfully\"}");
+            if (pathInfo != null && !pathInfo.isEmpty()) {
+                String[] pathParts = pathInfo.split("/");
+                if (pathParts.length > 1) {
+                    int id = Integer.parseInt(pathParts[1]);
+                    customerService.deleteCustomer(id);
+                    response.getWriter().write("{\"message\": \"Customer deleted successfully\"}");
+                }
+            } else {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Customer ID is required.");
             }
         }
         catch (Exception ex) {
@@ -124,5 +141,4 @@ public class CustomerServlet extends HttpServlet {
             response.getWriter().write("{\"error\": \"Server error: " + ex.getMessage().replace("\"", "\\\"") + "\"}");
         }
     }
-
 }
