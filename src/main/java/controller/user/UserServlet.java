@@ -13,15 +13,14 @@ import services.userService.UserService;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet("/users")
+@WebServlet("/users/*")
 public class UserServlet extends HttpServlet {
 
     private final UserService userService = new UserService();
-    private final ObjectMapper objectMapper = new ObjectMapper(); // Jackson for JSON
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-    //    POST /user?action=register
-    //    POST /user?action=login
-    //    POST /user?action=updatePassword
+    // POST http://localhost:8080/PahanaEduBackEnd/users/register
+    // POST http://localhost:8080/PahanaEduBackEnd/users/login
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -30,127 +29,129 @@ public class UserServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
 
         try {
-            String action = request.getParameter("action");
+            String pathInfo = request.getPathInfo();
 
-
-            if (action == null || action.trim().isEmpty()) {
+            if (pathInfo == null || pathInfo.equals("/")) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                response.getWriter().write("{\"error\": \"Action parameter is required.\"}");
+                response.getWriter().write("{\"error\": \"Endpoint required (register/login)\"}");
                 return;
             }
 
-            switch (action) {
+            switch (pathInfo.substring(1)) {
                 case "register":
                     userService.registerUser(request);
                     response.getWriter().write("{\"message\": \"Registered Successfully\"}");
                     break;
                 case "login":
-                    userService.login(request,response);
-                    response.getWriter().write("{\"message\": \"Login credentials are correct\"}");
+                    userService.login(request, response);
+                    response.getWriter().write("{\"message\": \"Login successful\"}");
                     break;
-//                case "updatePassword":
-//                  userService.updateUserPassword(request,response);
-//                    response.getWriter().write("{\"message\": \"Password updated.\"}");
-//                    break;
                 default:
-                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Unknown action: " + action);
-                    response.getWriter().write("{\"error\": \"Unknown action: " + action + "\"}");
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    response.getWriter().write("{\"error\": \"Invalid endpoint\"}");
             }
-
         } catch (Exception ex) {
             ex.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().write("{\"error\": \"Server error: " + ex.getMessage().replace("\"", "\\\"") + "\"}");
+            response.getWriter().write("{\"error\": \"Server error: " + ex.getMessage() + "\"}");
         }
     }
 
+    // GET http://localhost:8080/PahanaEduBackEnd/users (get all)
+    // GET http://localhost:8080/PahanaEduBackEnd/users/{id} (get by id)
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
-        String id = request.getParameter("id");
+        String pathInfo = request.getPathInfo();
 
         try {
-            if (id != null && !id.isEmpty()) {
-
+            if (pathInfo == null || pathInfo.equals("/")) {
+                // Get all users
+                List<UserDto> users = userService.getAllUsers();
+                response.getWriter().write(objectMapper.writeValueAsString(users));
+            } else {
+                // Get user by ID
+                String id = pathInfo.substring(1);
                 User user = userService.getUserById(Integer.parseInt(id));
                 UserDto userDto = UserMapper.toDTO(user);
                 response.getWriter().write(objectMapper.writeValueAsString(userDto));
             }
-            else{
-                List<UserDto> users = userService.getAllUsers();
-                response.getWriter().write(objectMapper.writeValueAsString(users));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().write("{\"error\": \"Server error: " + ex.getMessage() + "\"}");
+        }
+    }
 
+    // PUT http://localhost:8080/PahanaEduBackEnd/users/{id} (update details)
+    // PUT http://localhost:8080/PahanaEduBackEnd/users/{id}/password (update password)
+    @Override
+    protected void doPut(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        String pathInfo = request.getPathInfo();
+
+        try {
+            if (pathInfo == null || pathInfo.equals("/")) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                response.getWriter().write("{\"error\": \"User ID required\"}");
+                return;
+            }
+
+            String[] parts = pathInfo.split("/");
+            if (parts.length < 2) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                response.getWriter().write("{\"error\": \"Invalid path\"}");
+                return;
+            }
+
+            String id = parts[1];
+
+            if (parts.length > 2 && parts[2].equals("password")) {
+                // Update password
+                userService.updateUserPassword(request, response);
+                response.getWriter().write("{\"message\": \"Password updated\"}");
+            } else {
+                // Update user details
+                userService.updateUser(request, response, id);
+                response.getWriter().write("{\"message\": \"User updated\"}");
             }
         } catch (Exception ex) {
             ex.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().write("{\"error\": \"Server error: " + ex.getMessage().replace("\"", "\\\"") + "\"}");
+            response.getWriter().write("{\"error\": \"Update failed: " + ex.getMessage() + "\"}");
         }
     }
 
+    // DELETE http://localhost:8080/PahanaEduBackEnd/users/{id}
     @Override
-    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-
-        String action = request.getParameter("action"); // updatePassword or updateDetails
-        String id = request.getParameter("id");
+        String pathInfo = request.getPathInfo();
 
         try {
-            if (id == null || id.isEmpty()) {
+            if (pathInfo == null || pathInfo.equals("/")) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                response.getWriter().write("{\"error\": \"User ID is required.\"}");
-                return;
-            }
-            if (action == null || action.isEmpty()) {
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                response.getWriter().write("{\"error\": \"Action parameter is required.\"}");
+                response.getWriter().write("{\"error\": \"User ID required\"}");
                 return;
             }
 
-            switch (action) {
-                case "updatePassword":
-                    userService.updateUserPassword(request, response);
-                    response.getWriter().write("{\"message\": \"Password updated successfully.\"}");
-                    break;
-
-                case "updateDetails":
-                    userService.updateUser(request, response);
-                    response.getWriter().write("{\"message\": \"User details updated successfully.\"}");
-                    break;
-
-                default:
-                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    response.getWriter().write("{\"error\": \"Unknown action: " + action + "\"}");
-                    break;
-            }
-        }
-        catch (Exception ex) {
+            String id = pathInfo.substring(1);
+            userService.deleteUser(Integer.parseInt(id));
+            response.getWriter().write("{\"message\": \"User deleted\"}");
+        } catch (Exception ex) {
             ex.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().write("{\"error\": \"Server error: " + ex.getMessage() + "\"}");
-        }
-    }
-
-    @Override
-    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        String id = request.getParameter("id");
-
-        try {
-            if (id != null && !id.isEmpty()) {
-                userService.deleteUser(Integer.parseInt(id));
-                response.getWriter().write("{\"message\": \"User Deleted.\"}");
-            }
-        }
-        catch (Exception ex) {
-            ex.printStackTrace();
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().write("{\"error\": \"Server error: " + ex.getMessage() + "\"}");
+            response.getWriter().write("{\"error\": \"Delete failed: " + ex.getMessage() + "\"}");
         }
     }
 }

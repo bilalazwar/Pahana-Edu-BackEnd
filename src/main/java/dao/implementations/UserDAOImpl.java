@@ -21,27 +21,28 @@ public class UserDAOImpl implements UserDAO {
     @Override
     public void addUser(User user) throws Exception {
 
-        String sql = "INSERT INTO user (id, username, password, role_id, full_name, email, created_at, updated_at, last_login, is_active) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO users (username, password, role_id, full_name, email, created_at, updated_at, last_login, active) " +
+                "VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
-            stmt.setInt(1, user.getId());
-            stmt.setString(2, user.getUsername());
-            stmt.setString(3, user.getPassword());
-            stmt.setInt(4, user.getRole_id());
-            stmt.setString(5, user.getFull_name());
-            stmt.setString(6, user.getEmail());
-            stmt.setTimestamp(7, Timestamp.valueOf(user.getCreatedAt()));
-            stmt.setTimestamp(8, Timestamp.valueOf(user.getUpdatedAt()));
-            stmt.setTimestamp(9, user.getLastLogin() != null ? Timestamp.valueOf(user.getLastLogin()) : null);
-            stmt.setBoolean(10, user.isActive());
+//            stmt.setInt(1, user.getId());
+            stmt.setString(1, user.getUsername());
+            stmt.setString(2, user.getPassword());
+            stmt.setInt(3, user.getRole_id());
+            stmt.setString(4, user.getFull_name());
+            stmt.setString(5, user.getEmail());
+            stmt.setTimestamp(6, Timestamp.valueOf(user.getCreatedAt()));
+            stmt.setTimestamp(7, Timestamp.valueOf(user.getUpdatedAt()));
+            stmt.setTimestamp(8, user.getLastLogin() != null ? Timestamp.valueOf(user.getLastLogin()) : null);
+//            stmt.setBoolean(10, user.isActive());
+            stmt.setBoolean(9, true);
             stmt.executeUpdate();
         }
     }
 
     @Override
     public User getUserById(int id) throws Exception {
-        String sql = "SELECT * FROM user WHERE id = ?";
+        String sql = "SELECT * FROM users WHERE id = ?";
         try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
@@ -57,7 +58,7 @@ public class UserDAOImpl implements UserDAO {
     @Override
     public List<User> getAllUsers() throws Exception {
         List<User> users = new ArrayList<>();
-        String sql = "SELECT * FROM user";
+        String sql = "SELECT * FROM users";
 
         try (PreparedStatement stmt = getConnection().prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -71,8 +72,8 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public void updateUser(User user) throws Exception {
-        String sql = "UPDATE user SET username = ?, password = ?, role_id = ?, full_name = ?, email = ?, " +
-                "updated_at = ?, last_login = ?, is_active = ? WHERE id = ?";
+        String sql = "UPDATE users SET username = ?, password = ?, role_id = ?, full_name = ?, email = ?, " +
+                "updated_at = ?, last_login = ?, active = ? WHERE id = ?";
 
         try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
             stmt.setString(1, user.getUsername());
@@ -90,7 +91,7 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public void deleteUser(int id) throws Exception {
-        String sql = "DELETE FROM user WHERE id = ?";
+        String sql = "DELETE FROM users WHERE id = ?";
         try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
             stmt.setInt(1, id);
             stmt.executeUpdate();
@@ -99,7 +100,7 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public boolean userExist(int id) throws Exception {
-        String sql = "SELECT 1 FROM user WHERE id = ?";
+        String sql = "SELECT 1 FROM users WHERE id = ?";
 
         try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
             stmt.setInt(1, id);
@@ -113,7 +114,7 @@ public class UserDAOImpl implements UserDAO {
     @Override
     public boolean verifyUserPassword(String username, String enteredPassword) throws Exception {
 
-        String sql = "SELECT password FROM user WHERE username = ?";
+        String sql = "SELECT password FROM users WHERE username = ?";
 
         try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
             stmt.setString(1, username);
@@ -135,7 +136,7 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public void updatePassword(int userId, String newPassword) throws Exception {
-        String sql = "UPDATE user SET password = ?, updated_at = ? WHERE id = ?";
+        String sql = "UPDATE users SET password = ?, updated_at = ? WHERE id = ?";
 
         try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
             // Hash the new password
@@ -163,7 +164,7 @@ public class UserDAOImpl implements UserDAO {
         LocalDateTime updatedAt = rs.getTimestamp("updated_at").toLocalDateTime();
         Timestamp lastLoginTS = rs.getTimestamp("last_login");
         LocalDateTime lastLogin = (lastLoginTS != null) ? lastLoginTS.toLocalDateTime() : null;
-        boolean isActive = rs.getBoolean("is_active");
+        boolean isActive = rs.getBoolean("active");
 
         UserType userType;
         switch (role_id) {

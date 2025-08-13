@@ -177,11 +177,12 @@ public class UserService {
     }
 
     // Update full user info (must pass full user object)
-    public void updateUser(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public void updateUser(HttpServletRequest request, HttpServletResponse response, String id) throws Exception {
 
         User user = returUser(request);
-
-        validateUser(user, false); // false = skip password validation
+        validateUser(user, true); // false = skip password validation
+        user.setPassword(PasswordUtil.hashPassword(user.getPassword()));
+        user.setId(Integer.parseInt(id));
         userDAO.updateUser(user);
     }
 

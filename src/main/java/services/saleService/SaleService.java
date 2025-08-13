@@ -1,10 +1,12 @@
 package services.saleService;
 
+import dao.implementations.SaleItemsDAOImpl;
 import dao.interfaces.SaleDAO;
 import dao.interfaces.SaleItemsDAO;
 import models.sale.Sale;
 import models.sale.SaleItems;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,8 +19,8 @@ public class SaleService {
         this.saleDAO = saleDAO;
     }
 
-    private SaleItemsDAO saleItemsDAO;
-    private SaleItemService saleItemService = new SaleItemService(saleItemsDAO);
+    private final SaleItemsDAO saleItemsDAO = new SaleItemsDAOImpl();
+    private final SaleItemService saleItemService = new SaleItemService(saleItemsDAO);
 
     public void createSale(Sale sale) throws Exception {
         if (sale == null) {
@@ -29,12 +31,27 @@ public class SaleService {
         }
 
         try {
-            saleDAO.addSale(sale);
 
             List<SaleItems> saleItemsList = sale.getItems();
-
             for(SaleItems saleItems : saleItemsList){
-                saleItemsDAO.addSaleItem(saleItems);
+                saleItems.setTotalPrice(BigDecimal.valueOf(saleItems.getUnitePrice()*saleItems.getQuantity()));
+            }
+
+            BigDecimal totalAmount1 = BigDecimal.ZERO;
+            for(SaleItems saleItems : saleItemsList){
+                totalAmount1 = totalAmount1.add(saleItems.getTotalPrice());
+            }
+
+            sale.setTotalAmount(totalAmount1);
+            int generatedId = saleDAO.addSale(sale);
+
+            if(generatedId != -1){
+
+                for(SaleItems saleItems : saleItemsList){
+                    saleItems.setSaleId(generatedId);
+                    saleItemsDAO.addSaleItem(saleItems);
+//                    System.out.println(saleItems.getProductName());
+                }
             }
         }
         catch (SQLException e) {

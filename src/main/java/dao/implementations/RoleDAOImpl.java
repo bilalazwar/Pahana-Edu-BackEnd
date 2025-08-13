@@ -25,7 +25,24 @@ public class RoleDAOImpl implements RoleDAO {
 
     @Override
     public Role getRoleById(int id) throws Exception {
-        return null;
+        String sql = "SELECT id, name FROM Roles WHERE id = ?";
+
+        try (Connection conn = DBConnectionUtil.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Role role = new Role();
+                    role.setId(rs.getInt("id"));
+                    role.setName(rs.getString("name"));
+                    return role;
+                }
+            }
+        }
+
+        return null; // Role not found
     }
 
     @Override

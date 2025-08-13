@@ -6,6 +6,7 @@ public class SaleItems {
     private int id;
     private int saleId;
     private int productId;
+    private String productName;
     private int quantity;
     private double unitePrice;
     private BigDecimal totalPrice;
@@ -48,6 +49,14 @@ public class SaleItems {
             throw new IllegalArgumentException("Quantity cannot be greater than 1000");
         }
         this.quantity = quantity;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
     }
 
     public double getUnitePrice() {

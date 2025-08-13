@@ -53,7 +53,7 @@ public class PrivilegeService {
         if (name != null && name.trim().length() > 3) {
 
             privilegeDAO.updatePrivilege(privilegeDTO);
-            return "Successfully added a privilege";
+            return "Successfully updated a privilege";
         }
         else {
             return "unable to add privilege";
@@ -74,4 +74,9 @@ public class PrivilegeService {
 
     }
 
+    public Privilege getPrivilegeById(int id) throws Exception {
+
+        System.out.println("Value ====== "+ privilegeDAO.getPrivilegeById(id));
+        return privilegeDAO.getPrivilegeById(id);
+    }
 }

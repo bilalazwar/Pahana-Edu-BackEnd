@@ -28,6 +28,7 @@ public class SaleItemService {
     }
 
     public List<SaleItems> getSaleItemsBySaleId(int saleId) throws Exception {
+
         if (saleId <= 0 || !saleExist(saleId)) {
             throw new IllegalArgumentException("Invalid Sale Id.");
         }

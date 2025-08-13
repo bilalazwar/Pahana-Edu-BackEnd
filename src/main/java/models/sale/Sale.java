@@ -12,6 +12,7 @@ public class Sale {
     private LocalDateTime dateTime;
     private BigDecimal totalAmount;
     private List<SaleItems> items;
+    // need to add total quantity also later
 
     public Sale(){
 
@@ -49,8 +50,9 @@ public class Sale {
         this.userId = userId;
     }
 
-    public LocalDateTime getDateTime() {
-        return dateTime;
+    public String getDateTime() {
+//        return dateTime;
+        return dateTime != null ? dateTime.toString() : null;
     }
 
     public void setDateTime(LocalDateTime dateTime) {

@@ -4,6 +4,7 @@ import dao.interfaces.PrivilegeDAO;
 import dtos.PrivilegeDTO;
 import mapper.PrivilegeMapper;
 import models.rolePrivilege.Privilege;
+import models.rolePrivilege.Role;
 import utils.DBConnectionUtil;
 
 import java.sql.*;
@@ -26,25 +27,6 @@ public class PrivilegeDAOImpl implements PrivilegeDAO {
         } catch (SQLException e) {
             e.printStackTrace(); // You can later replace this with proper logging
         }
-    }
-
-    @Override
-    public Privilege getPrivilegeById(int id) throws Exception {
-
-        String sql = "SELECT * FROM PrivilegeS where id = ?";
-
-        try (Connection conn = DBConnectionUtil.getInstance().getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) { //stmt: The PreparedStatement object that will hold the SQL query and allow you to set values and execute it.
-
-            stmt.setInt(1, id);
-            // use this when parameter expects an int for string have to use setString
-
-
-        } catch (SQLException e) {
-            e.printStackTrace(); // You can later replace this with proper logging
-        }
-
-        return null;
     }
 
     @Override
@@ -104,7 +86,7 @@ public class PrivilegeDAOImpl implements PrivilegeDAO {
     @Override
     public int deletePrivilegeByID(int id) throws Exception {
 
-        String sql = "DELETE FROM PrivilegeS WHERE id = ?";
+        String sql = "DELETE FROM Privileges WHERE id = ?";
 
         try (Connection conn = DBConnectionUtil.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -120,8 +102,32 @@ public class PrivilegeDAOImpl implements PrivilegeDAO {
             return 0;
         }
     }
-    @Override
-    public void deletePrivilege(int id) throws Exception {
 
+    @Override
+    public Privilege getPrivilegeById(int id) throws Exception {
+        String sql = "SELECT id, name FROM Privileges WHERE id = ?";
+
+        try (Connection conn = DBConnectionUtil.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+            System.out.println("Id is ===== " + id);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+
+                    Privilege privilege = new Privilege();
+                    privilege.setId(rs.getInt("id"));
+                    privilege.setName(rs.getString("name"));
+                    // Add more setters if your table has more columns
+                    return privilege;
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new Exception("Error retrieving privilege with ID: " + id, e);
+        }
+
+        return null; // No privilege found for given ID
     }
 }

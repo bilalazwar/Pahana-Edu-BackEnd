@@ -11,6 +11,5 @@ public interface PrivilegeDAO {
     Privilege getPrivilegeById(int id) throws Exception;
     List<Privilege> getAllPrivileges() throws Exception;
     int updatePrivilege(PrivilegeDTO privilegeDTO) throws Exception;
-    void deletePrivilege(int id) throws Exception;
     int deletePrivilegeByID(int id) throws Exception;
 }

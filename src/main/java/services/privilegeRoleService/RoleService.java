@@ -24,7 +24,7 @@ public class RoleService {
     }
 
     public void updateRole(Role role) throws Exception {
-        if (role.getId() <= 0 || role.getName() == null || role.getName().trim().isEmpty()) {
+        if (role.getName() == null || role.getName().trim().isEmpty()) {
             throw new IllegalArgumentException("Invalid role data for update.");
         }
         roleDAO.updateRole(role);
@@ -35,5 +35,12 @@ public class RoleService {
             throw new IllegalArgumentException("Invalid role ID.");
         }
         return roleDAO.deleteRoleById(id);
+    }
+
+    public Role getRoleById(int id) throws Exception {
+        if (id <= 0) {
+            throw new IllegalArgumentException("Invalid role ID.");
+        }
+        return roleDAO.getRoleById(id);
     }
 }

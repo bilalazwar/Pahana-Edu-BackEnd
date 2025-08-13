@@ -16,15 +16,16 @@ public class SaleItemsDAOImpl implements SaleItemsDAO {
 
     @Override
     public void addSaleItem(SaleItems saleItem) throws SQLException {
-        String sql = "INSERT INTO sale_items (sale_id, product_id, quantity, unit_price, total_price) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO sale_items (sale_id, product_id, product_name, quantity, unit_price, total_price) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement stmt = getConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) { // only then the generated key will be returned.
 
             stmt.setInt(1, saleItem.getSaleId());
             stmt.setInt(2, saleItem.getProductId());
-            stmt.setInt(3, saleItem.getQuantity());
-            stmt.setDouble(4, saleItem.getUnitePrice());
-            stmt.setBigDecimal(5, saleItem.getTotalPrice());
+            stmt.setString(3, saleItem.getProductName());
+            stmt.setInt(4, saleItem.getQuantity());
+            stmt.setDouble(5, saleItem.getUnitePrice());
+            stmt.setBigDecimal(6, saleItem.getTotalPrice());
 
             stmt.executeUpdate();
 
@@ -38,7 +39,7 @@ public class SaleItemsDAOImpl implements SaleItemsDAO {
 
     @Override
     public SaleItems getSaleItemById(int id) throws SQLException {
-        String sql = "SELECT * FROM sale_items WHERE id = ?";
+        String sql = "SELECT * FROM sale_items WHERE sale_id = ?";
 
         try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
 
@@ -87,16 +88,17 @@ public class SaleItemsDAOImpl implements SaleItemsDAO {
 
     @Override
     public void updateSaleItem(SaleItems saleItem) throws SQLException {
-        String sql = "UPDATE sale_items SET sale_id = ?, product_id = ?, quantity = ?, unit_price = ?, total_price = ? WHERE id = ?";
+        String sql = "UPDATE sale_items SET sale_id = ?, product_id = ?, product_name = ?, quantity = ?, unit_price = ?, total_price = ? WHERE id = ?";
 
         try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
 
             stmt.setInt(1, saleItem.getSaleId());
             stmt.setInt(2, saleItem.getProductId());
-            stmt.setInt(3, saleItem.getQuantity());
-            stmt.setDouble(4, saleItem.getUnitePrice());
-            stmt.setBigDecimal(5, saleItem.getTotalPrice());
-            stmt.setInt(6, saleItem.getId());
+            stmt.setString(3, saleItem.getProductName());
+            stmt.setInt(4, saleItem.getQuantity());
+            stmt.setDouble(5, saleItem.getUnitePrice());
+            stmt.setBigDecimal(6, saleItem.getTotalPrice());
+            stmt.setInt(7, saleItem.getId());
 
             stmt.executeUpdate();
         }
@@ -113,22 +115,16 @@ public class SaleItemsDAOImpl implements SaleItemsDAO {
         }
     }
 
-    @Override
     public boolean saleExist(int saleId) throws SQLException {
-        String sql = "SELECT 1 FROM sale_items WHERE sale_id = ?";
+        String sql = "SELECT 1 FROM sales WHERE id = ?";
 
         try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
-
             stmt.setInt(1, saleId);
-            int value = stmt.executeUpdate();
-
-            if(value == 1) {
-                return true;
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next(); // returns true if any record exists
             }
         }
-        return false;
     }
-
 
     // Helper method
     private SaleItems extractSaleItem(ResultSet rs) throws SQLException {
@@ -136,6 +132,7 @@ public class SaleItemsDAOImpl implements SaleItemsDAO {
         item.setId(rs.getInt("id"));
         item.setSaleId(rs.getInt("sale_id"));
         item.setProductId(rs.getInt("product_id"));
+        item.setProductName(rs.getString("product_name"));
         item.setQuantity(rs.getInt("quantity"));
         item.setUnitePrice(rs.getDouble("unit_price"));
         item.setTotalPrice(rs.getBigDecimal("total_price"));

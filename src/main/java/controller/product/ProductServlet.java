@@ -14,7 +14,7 @@ import services.productService.ProductService;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet("/products")
+@WebServlet("/products/*")
 public class ProductServlet extends HttpServlet {
 
     ProductDAOImpl productDAOImpl = new ProductDAOImpl();
@@ -37,14 +37,12 @@ public class ProductServlet extends HttpServlet {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.getWriter().write("{\"error\": \"Server error: " + ex.getMessage().replace("\"", "\\\"") + "\"}");
         }
-
     }
 
-
-    //    GET /products?action=getProductById  -- http://localhost:8080/PahanaEduBackEnd/products?action=getProductById&id=1
-    //    GET /products?action=getProductByBarcode  -- http://localhost:8080/PahanaEduBackEnd/products?action=getProductByBarcode&barcode=1234567890123
-    //    GET /products?action=getProductQuantity   -- http://localhost:8080/PahanaEduBackEnd/products?action=getProductQuantity&id=5
-    //    GET /products?action=getAllProducts  -- http://localhost:8080/PahanaEduBackEnd/products?action=getAllProducts
+    // GET http://localhost:8080/PahanaEduBackEnd/products (get all)
+    // GET http://localhost:8080/PahanaEduBackEnd/products/{id} (get by id)
+    // GET http://localhost:8080/PahanaEduBackEnd/products/barcode/{barcode} (get by barcode)
+    // GET http://localhost:8080/PahanaEduBackEnd/products/{id}/quantity (get quantity)
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -52,54 +50,35 @@ public class ProductServlet extends HttpServlet {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
-        String action = request.getParameter("action");     // e.g., "getProductQuantity"
-        String idParam = request.getParameter("id");        // for product ID
-        String barcode = request.getParameter("barcode");   // for finding by barcode
+        String pathInfo = request.getPathInfo();
 
         try {
-            if (action != null && !action.isEmpty()) {
-                switch (action) {
-                    case "getProductById":
-                        if (idParam != null && !idParam.isEmpty()) {
-                            int id = Integer.parseInt(idParam);
-                            ProductDto product = productService.getProductById(id);
-                            response.getWriter().write(objectMapper.writeValueAsString(product));
-                        } else {
-                            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Product ID is required.");
-                        }
-                        break;
-
-                    case "getProductByBarcode":
-                        if (barcode != null && !barcode.isEmpty()) {
-                            ProductDto product = productService.getProductByBarcode(Long.parseLong(barcode));
-                            response.getWriter().write(objectMapper.writeValueAsString(product));
-                        } else {
-                            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Barcode is required.");
-                        }
-                        break;
-
-                    case "getProductQuantity":
-                        if (idParam != null && !idParam.isEmpty()) {
-                            int id = Integer.parseInt(idParam);
-                            int quantity = productService.getProductQuantity(id);
-                            response.getWriter().write("{\"quantity\": " + quantity + "}");
-                        } else {
-                            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Product ID is required.");
-                        }
-                        break;
-
-                    case "getAllProducts":
-                    default:
-                        List<ProductDto> allProducts = productService.getAllProducts();
-                        response.getWriter().write(objectMapper.writeValueAsString(allProducts));
-                        break;
-                }
-            } else {
-                // Default action if no `action` parameter is provided: return all products
+            if (pathInfo == null || pathInfo.equals("/")) {
+                // Handle GET all products
                 List<ProductDto> allProducts = productService.getAllProducts();
                 response.getWriter().write(objectMapper.writeValueAsString(allProducts));
             }
+            else if (pathInfo.startsWith("/barcode/")) {
+                // Handle GET by barcode
+                String barcode = pathInfo.substring(9); // Extract barcode after "/barcode/"
+                ProductDto product = productService.getProductByBarcode(Long.parseLong(barcode));
+                response.getWriter().write(objectMapper.writeValueAsString(product));
+            }
+            else if (pathInfo.endsWith("/quantity")) {
+                // Handle GET quantity
+                String idStr = pathInfo.substring(1, pathInfo.indexOf("/quantity"));
+                int quantity = productService.getProductQuantity(Integer.parseInt(idStr));
+                response.getWriter().write("{\"quantity\": " + quantity + "}");
+            }
+            else {
+                // Handle GET by ID (default case)
+                String idStr = pathInfo.substring(1); // Remove leading slash
+                ProductDto product = productService.getProductById(Integer.parseInt(idStr));
+                response.getWriter().write(objectMapper.writeValueAsString(product));
+            }
 
+        } catch (NumberFormatException e) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid ID or barcode format");
         } catch (Exception ex) {
             ex.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -107,8 +86,8 @@ public class ProductServlet extends HttpServlet {
         }
     }
 
-//    PUT http://localhost:8080/PahanaEduBackEnd/products?action=updateProduct&id={}
-//    PUT http://localhost:8080/PahanaEduBackEnd/products?action=updateProductQuantity&id={}&quantity={}
+    // PUT http://localhost:8080/PahanaEduBackEnd/products/{id} (full update)
+    // PUT http://localhost:8080/PahanaEduBackEnd/products/{id}/quantity?value={} (quantity update)
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -116,35 +95,27 @@ public class ProductServlet extends HttpServlet {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
-        String action = request.getParameter("action");     //  getProductQuantity,
-        String idParam = request.getParameter("id");
-        String qtyParam = request.getParameter("quantity");
-
+        String pathInfo = request.getPathInfo();
 
         try {
-            if (action != null && !action.isEmpty() && idParam != null && !idParam.isEmpty()) {
-                switch (action) {
-                    case "updateProduct":
-                        Product product = objectMapper.readValue(request.getReader(), Product.class);
-                        int id = Integer.parseInt(idParam);
-                        productService.updateProduct(product, id);
-                        response.setStatus(HttpServletResponse.SC_OK);
-                        response.getWriter().write("{\"message\": \"Product details updated successfully\"}");
-                        break;
-                    case "updateProductQuantity":
-                        productService.updateProductQuantity(Integer.parseInt(idParam), Integer.parseInt(qtyParam));
-                        response.setStatus(HttpServletResponse.SC_OK);
-                        response.getWriter().write("{\"message\": \"Product quantity updated successfully\"}");
-                        break;
-                    default:
-                        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                        response.getWriter().write("{\"error\": \"Unknown action: " + action + "\"}");
-                        break;
+            if (pathInfo != null && !pathInfo.isEmpty()) {
+                if (pathInfo.endsWith("/quantity")) {
+                    // Handle quantity update
+                    String idStr = pathInfo.substring(1, pathInfo.indexOf("/quantity"));
+                    String qtyParam = request.getParameter("value");
+                    productService.updateProductQuantity(Integer.parseInt(idStr), Integer.parseInt(qtyParam));
+                    response.getWriter().write("{\"message\": \"Product quantity updated successfully\"}");
+                } else {
+                    // Handle full product update
+                    String idStr = pathInfo.substring(1);
+                    Product product = objectMapper.readValue(request.getReader(), Product.class);
+                    productService.updateProduct(product, Integer.parseInt(idStr));
+                    response.getWriter().write("{\"message\": \"Product details updated successfully\"}");
                 }
             }
             else {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                response.getWriter().write("{\"error\": \"Missing required parameters: action and id\"}");
+                response.getWriter().write("{\"error\": \"Product ID is required\"}");
             }
         }
         catch (Exception ex) {
@@ -154,20 +125,24 @@ public class ProductServlet extends HttpServlet {
         }
     }
 
-//  DELETE /   http://localhost:8080/PahanaEduBackEnd/products?id={}
+    // DELETE http://localhost:8080/PahanaEduBackEnd/products/{id}
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
-        String idParam = request.getParameter("id");
+        String pathInfo = request.getPathInfo();
 
         try {
-            if (idParam != null && !idParam.isEmpty()) {
-                int id = Integer.parseInt(idParam);
-                productService.deleteProduct(id);
+            if (pathInfo != null && !pathInfo.isEmpty()) {
+                String idStr = pathInfo.substring(1);
+                productService.deleteProduct(Integer.parseInt(idStr));
                 response.getWriter().write("{\"message\": \"Product deleted successfully\"}");
+            }
+            else {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                response.getWriter().write("{\"error\": \"Product ID is required\"}");
             }
         }
         catch (Exception ex) {
@@ -176,6 +151,4 @@ public class ProductServlet extends HttpServlet {
             response.getWriter().write("{\"error\": \"Server error: " + ex.getMessage().replace("\"", "\\\"") + "\"}");
         }
     }
-
-
 }

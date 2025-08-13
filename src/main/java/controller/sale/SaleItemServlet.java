@@ -13,100 +13,117 @@ import services.saleService.SaleItemService;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet("/saleItems")
+@WebServlet("/sale-items/*")
 public class SaleItemServlet extends HttpServlet {
 
     SaleItemsDAOImpl saleItemsDAOImpl = new SaleItemsDAOImpl();
     private final SaleItemService saleItemService = new SaleItemService(saleItemsDAOImpl);
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    // POST http://localhost:8080/PahanaEduBackEnd/sale-items
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
         try {
-            // Convert JSON request body into a SaleItems object
             SaleItems saleItem = objectMapper.readValue(request.getReader(), SaleItems.class);
-
             saleItemService.addSaleItem(saleItem);
 
             response.setStatus(HttpServletResponse.SC_CREATED);
-            response.getWriter().write("{\"message\": \"Sale added successfully\"}");
-        }
-        catch (Exception ex) {
+            response.getWriter().write("{\"message\": \"Sale item added successfully\"}");
+        } catch (Exception ex) {
             ex.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.getWriter().write("{\"error\": \"Server error: " + ex.getMessage().replace("\"", "\\\"") + "\"}");
         }
     }
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+    // GET http://localhost:8080/PahanaEduBackEnd/sale-items/sale/{saleId} (by sale)
+    // GET http://localhost:8080/PahanaEduBackEnd/sale-items/{id} (single item)
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
+        String pathInfo = request.getPathInfo();
 
         try {
+            if (pathInfo == null || pathInfo.equals("/")) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                response.getWriter().write("{\"error\": \"Missing required parameter\"}");
+                return;
+            }
 
-            response.getWriter().write("{\"message\": \"Customer details added successfully\"}");
-        }
-        catch (Exception ex) {
-            ex.printStackTrace();
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().write("{\"error\": \"Server error: " + ex.getMessage().replace("\"", "\\\"") + "\"}");
-        }
-
-    }
-
-    // ONLY Get sale items by saleId
-    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-
-        try {
-            String saleIdParam = request.getParameter("saleId");
-            String saleItemIdParam = request.getParameter("saleItemId");
-
-            if (saleIdParam != null) {
-
-                int saleId = Integer.parseInt(saleIdParam);
+            if (pathInfo.startsWith("/sale/")) {
+                // Get by sale ID
+                int saleId = Integer.parseInt(pathInfo.substring(6));
                 List<SaleItems> items = saleItemService.getSaleItemsBySaleId(saleId);
                 objectMapper.writeValue(response.getWriter(), items);
-            }
-            if (saleItemIdParam != null) {
-
-                int saleItemId = Integer.parseInt(saleItemIdParam);
-                SaleItems item = saleItemService.getSaleItemById(saleItemId);
+            } else {
+                // Get single item by ID
+                int itemId = Integer.parseInt(pathInfo.substring(1));
+                SaleItems item = saleItemService.getSaleItemById(itemId);
                 objectMapper.writeValue(response.getWriter(), item);
             }
-            else {
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                response.getWriter().write("{\"error\": \"Missing required parameter: saleId\"}");
-            }
-
-            response.getWriter().write("{\"message\": \"Customer details added successfully\"}");
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.getWriter().write("{\"error\": \"Server error: " + ex.getMessage().replace("\"", "\\\"") + "\"}");
         }
-
     }
-    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
+    // PUT http://localhost:8080/PahanaEduBackEnd/sale-items/{id}
+    protected void doPut(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
-        try {
+//        response.setContentType("application/json");
+//        response.setCharacterEncoding("UTF-8");
+//        String pathInfo = request.getPathInfo();
+//
+//        try {
+//            if (pathInfo == null || pathInfo.equals("/")) {
+//                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+//                response.getWriter().write("{\"error\": \"Missing item ID\"}");
+//                return;
+//            }
+//
+//            int itemId = Integer.parseInt(pathInfo.substring(1));
+//            SaleItems saleItem = objectMapper.readValue(request.getReader(), SaleItems.class);
+//            saleItem.setId(itemId); // Ensure ID matches path
+//
+//            saleItemService.updateSaleItem(saleItem);
+//            response.getWriter().write("{\"message\": \"Sale item updated successfully\"}");
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+//            response.getWriter().write("{\"error\": \"Server error: " + ex.getMessage().replace("\"", "\\\"") + "\"}");
+//        }
+    }
 
-            response.getWriter().write("{\"message\": \"Customer details added successfully\"}");
-        }
-        catch (Exception ex) {
-            ex.printStackTrace();
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().write("{\"error\": \"Server error: " + ex.getMessage().replace("\"", "\\\"") + "\"}");
-        }
+    // DELETE http://localhost:8080/PahanaEduBackEnd/sale-items/{id}
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
+//        response.setContentType("application/json");
+//        response.setCharacterEncoding("UTF-8");
+//        String pathInfo = request.getPathInfo();
+//
+//        try {
+//            if (pathInfo == null || pathInfo.equals("/")) {
+//                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+//                response.getWriter().write("{\"error\": \"Missing item ID\"}");
+//                return;
+//            }
+//
+//            int itemId = Integer.parseInt(pathInfo.substring(1));
+//            saleItemService.deleteSaleItem(itemId);
+//            response.getWriter().write("{\"message\": \"Sale item deleted successfully\"}");
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+//            response.getWriter().write("{\"error\": \"Server error: " + ex.getMessage().replace("\"", "\\\"") + "\"}");
+//        }
     }
 }

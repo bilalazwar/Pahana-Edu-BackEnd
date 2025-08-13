@@ -7,8 +7,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface SaleDAO {
+
     // Create
-    void addSale(Sale sale) throws SQLException;
+    int addSale(Sale sale) throws SQLException;
 
     // Read
     Sale getSaleById(int id) throws SQLException;

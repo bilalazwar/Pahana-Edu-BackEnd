@@ -18,7 +18,7 @@ public class SaleDAOImpl implements SaleDAO {
 
     // this below has to return the sale ID, only then I will be able to add
     @Override
-    public void addSale(Sale sale) throws SQLException {
+    public int addSale(Sale sale) throws SQLException {
         String sql = "INSERT INTO sales (customer_id, user_id, sale_date, total_amount) VALUES (?, ?, ?, ?)";
 
         try (PreparedStatement stmt = getConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -29,14 +29,19 @@ public class SaleDAOImpl implements SaleDAO {
             stmt.setBigDecimal(4, sale.getTotalAmount());
 
             stmt.executeUpdate();
-            // Get generated ID and set it into the Sale object
+
             try (ResultSet rs = stmt.getGeneratedKeys()) {
                 if (rs.next()) {
-                    sale.setId(rs.getInt(1)); // 👈 this sets the sale ID
+                    int generatedId = rs.getInt(1);
+                    sale.setId(generatedId); // Optional: still set it on the object
+                    return generatedId;      // 👈 return the generated ID
+                } else {
+                    throw new SQLException("Failed to retrieve generated sale ID.");
                 }
             }
         }
     }
+
 
     @Override
     public Sale getSaleById(int id) throws SQLException {
