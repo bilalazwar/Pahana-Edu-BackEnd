@@ -69,7 +69,23 @@ public class UserServlet extends HttpServlet {
         String pathInfo = request.getPathInfo();
 
         try {
-            if (pathInfo == null || pathInfo.equals("/")) {
+            if (pathInfo != null && pathInfo.equals("/login")) {
+                // Handle login
+                try {
+                    boolean loginSuccess = userService.login(request, response);
+
+                    if (loginSuccess) {
+                        response.setStatus(HttpServletResponse.SC_OK);
+                        response.getWriter().write("{\"message\": \"Login successful\"}");
+                    } else {
+                        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                        response.getWriter().write("{\"error\": \"Login failed\"}");
+                    }
+                } catch (IllegalArgumentException e) {
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    response.getWriter().write("{\"error\": \"" + e.getMessage().replace("\"", "\\\"") + "\"}");
+                }
+            } else if (pathInfo == null || pathInfo.equals("/")) {
                 // Get all users
                 List<UserDto> users = userService.getAllUsers();
                 response.getWriter().write(objectMapper.writeValueAsString(users));
@@ -80,10 +96,11 @@ public class UserServlet extends HttpServlet {
                 UserDto userDto = UserMapper.toDTO(user);
                 response.getWriter().write(objectMapper.writeValueAsString(userDto));
             }
+
         } catch (Exception ex) {
             ex.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().write("{\"error\": \"Server error: " + ex.getMessage() + "\"}");
+            response.getWriter().write("{\"error\": \"Server error: " + ex.getMessage().replace("\"", "\\\"") + "\"}");
         }
     }
 

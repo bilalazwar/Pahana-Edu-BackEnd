@@ -19,14 +19,15 @@ public class SaleDAOImpl implements SaleDAO {
     // this below has to return the sale ID, only then I will be able to add
     @Override
     public int addSale(Sale sale) throws SQLException {
-        String sql = "INSERT INTO sales (customer_id, user_id, sale_date, total_amount) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO sales (customer_id, user_id, sale_date, payment_type, total_amount) VALUES (?, ?, ?, ?, ?)";
 
         try (PreparedStatement stmt = getConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setInt(1, sale.getCustomerId());
             stmt.setInt(2, sale.getUserId());
             stmt.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now()));
-            stmt.setBigDecimal(4, sale.getTotalAmount());
+            stmt.setString(4, "cash");
+            stmt.setBigDecimal(5, sale.getTotalAmount());
 
             stmt.executeUpdate();
 

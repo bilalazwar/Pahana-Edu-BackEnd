@@ -93,10 +93,11 @@ public class RolePrivilegeImpl implements RolePrivilegeDAO {
     }
 
     @Override
-    public List<Privilege> getPrivilegesByRoleId(int roleId) throws Exception {
+    public List<RolePrivilege> getPrivilegesByRoleId(int roleId) throws Exception {
+
         String sql = "SELECT * FROM role_privileges WHERE role_id = ?";
 
-        List<Privilege> privileges = new ArrayList<>();
+        List<RolePrivilege> rolePrivileges  = new ArrayList<>();
 
         try (Connection conn = DBConnectionUtil.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -105,18 +106,19 @@ public class RolePrivilegeImpl implements RolePrivilegeDAO {
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                Privilege privilege = new Privilege();
-                privilege.setId(rs.getInt("id"));
-                privilege.setName(rs.getString("name"));
-                privileges.add(privilege);
+
+                RolePrivilege rp = new RolePrivilege();
+                rp.setRoleId(rs.getInt("role_id"));
+                rp.setPrivilegeId(rs.getInt("privilege_id"));
+                rolePrivileges.add(rp);
             }
 
         } catch (SQLException e) {
-            e.printStackTrace(); // You may replace this with proper logging
+            e.printStackTrace(); // replace this with proper logging
             throw new Exception("Error retrieving privileges for role ID: " + roleId, e);
         }
 
-        return privileges;
+        return rolePrivileges;
     }
 
 }

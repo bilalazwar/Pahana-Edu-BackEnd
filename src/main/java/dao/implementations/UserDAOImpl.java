@@ -25,7 +25,6 @@ public class UserDAOImpl implements UserDAO {
                 "VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
-//            stmt.setInt(1, user.getId());
             stmt.setString(1, user.getUsername());
             stmt.setString(2, user.getPassword());
             stmt.setInt(3, user.getRole_id());
@@ -34,7 +33,6 @@ public class UserDAOImpl implements UserDAO {
             stmt.setTimestamp(6, Timestamp.valueOf(user.getCreatedAt()));
             stmt.setTimestamp(7, Timestamp.valueOf(user.getUpdatedAt()));
             stmt.setTimestamp(8, user.getLastLogin() != null ? Timestamp.valueOf(user.getLastLogin()) : null);
-//            stmt.setBoolean(10, user.isActive());
             stmt.setBoolean(9, true);
             stmt.executeUpdate();
         }

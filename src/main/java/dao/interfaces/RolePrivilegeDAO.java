@@ -15,6 +15,6 @@ public interface RolePrivilegeDAO {
 
     List<RolePrivilege> getRolesWithPrivileges() throws Exception;
 
-    List<Privilege> getPrivilegesByRoleId(int roleId) throws Exception;
+    List<RolePrivilege> getPrivilegesByRoleId(int roleId) throws Exception;
 
 }

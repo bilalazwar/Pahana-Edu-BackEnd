@@ -15,6 +15,7 @@ import mapper.UserMapper;
 import models.parent.User;
 import models.person.UserType;
 import models.rolePrivilege.Privilege;
+import models.rolePrivilege.RolePrivilege;
 import utils.PasswordUtil;
 
 import java.time.LocalDateTime;
@@ -124,13 +125,13 @@ public class UserService {
         if (result) {
             // ✅ Create session
             HttpSession session = request.getSession(true);
-            session.setAttribute("username", user.getUsername());
             session.setMaxInactiveInterval(15 * 60); // 15 minutes
             session.setAttribute("user_id", user.getId());
             session.setAttribute("role_id", user.getRole_id());
 
-            List<Privilege> rolePrivileges = rolePrivilegeDAO.getPrivilegesByRoleId(user.getRole_id());
+            List<RolePrivilege> rolePrivileges = rolePrivilegeDAO.getPrivilegesByRoleId(user.getRole_id());
             session.setAttribute("rolePrivileges", rolePrivileges);
+
 
             return true;
         }

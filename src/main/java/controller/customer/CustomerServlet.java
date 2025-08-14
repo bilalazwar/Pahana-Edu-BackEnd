@@ -13,7 +13,7 @@ import services.customerService.CustomerService;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet("/customers")
+@WebServlet("/customers/*")
 public class CustomerServlet extends HttpServlet {
 
     CustomerDAOImpl customerDAOImpl = new CustomerDAOImpl();
@@ -46,6 +46,7 @@ public class CustomerServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
 
         String pathInfo = request.getPathInfo();
+        System.out.println("pathInfo:=== " + pathInfo);
         String mobileNumberParam = request.getParameter("mobileNumber");
 
         try {
@@ -87,6 +88,17 @@ public class CustomerServlet extends HttpServlet {
             response.getWriter().write("{\"error\": \"Server error: " + ex.getMessage().replace("\"", "\\\"") + "\"}");
         }
     }
+
+
+
+
+
+
+
+
+
+
+
 
     // PUT http://localhost:8080/PahanaEduBackEnd/customers/{id}
     @Override
