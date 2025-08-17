@@ -12,8 +12,6 @@ public interface UserDAO {
     void updateUser(User user) throws Exception;
     void deleteUser(int id) throws Exception;
     boolean userExist(int id) throws Exception;
-    boolean verifyUserPassword(String username, String enteredPassword) throws Exception;
+    int verifyUserPassword(String username, String enteredPassword, int roleId) throws Exception;
     void updatePassword(int userId, String newPassword) throws Exception;
-
-
 }

@@ -43,8 +43,10 @@ public class UserServlet extends HttpServlet {
                     response.getWriter().write("{\"message\": \"Registered Successfully\"}");
                     break;
                 case "login":
-                    userService.login(request, response);
-                    response.getWriter().write("{\"message\": \"Login successful\"}");
+                    int loginSuccessWithUserId = userService.login(request, response);
+                    response.getWriter().write("{\"message\": \"Login successful\", \"userId\": " + loginSuccessWithUserId + "}");
+                    //userService.login(request, response);
+//                    response.getWriter().write("{\"message\": \"Login successful\"}");
                     break;
                 default:
                     response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -72,11 +74,12 @@ public class UserServlet extends HttpServlet {
             if (pathInfo != null && pathInfo.equals("/login")) {
                 // Handle login
                 try {
-                    boolean loginSuccess = userService.login(request, response);
+                    int loginSuccessWithUserId = userService.login(request, response);
 
-                    if (loginSuccess) {
+                    if (loginSuccessWithUserId>0) {
                         response.setStatus(HttpServletResponse.SC_OK);
-                        response.getWriter().write("{\"message\": \"Login successful\"}");
+//                        response.getWriter().write("{\"message\": \"Login successful\"}");
+                        response.getWriter().write("{\"message\": \"Login successful\", \"userId\": " + loginSuccessWithUserId + "}");
                     } else {
                         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                         response.getWriter().write("{\"error\": \"Login failed\"}");
@@ -88,6 +91,7 @@ public class UserServlet extends HttpServlet {
             } else if (pathInfo == null || pathInfo.equals("/")) {
                 // Get all users
                 List<UserDto> users = userService.getAllUsers();
+
                 response.getWriter().write(objectMapper.writeValueAsString(users));
             } else {
                 // Get user by ID

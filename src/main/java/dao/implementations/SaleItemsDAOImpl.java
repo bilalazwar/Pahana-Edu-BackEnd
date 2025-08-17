@@ -4,6 +4,7 @@ import dao.interfaces.SaleItemsDAO;
 import models.sale.SaleItems;
 import utils.DBConnectionUtil;
 
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,12 +21,17 @@ public class SaleItemsDAOImpl implements SaleItemsDAO {
 
         try (PreparedStatement stmt = getConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) { // only then the generated key will be returned.
 
+            BigDecimal unitPrice = BigDecimal.valueOf(saleItem.getUnitePrice());
+            BigDecimal quantity = BigDecimal.valueOf(saleItem.getQuantity());
+            BigDecimal itemTotal = unitPrice.multiply(quantity);
+
+
             stmt.setInt(1, saleItem.getSaleId());
             stmt.setInt(2, saleItem.getProductId());
             stmt.setString(3, saleItem.getProductName());
             stmt.setInt(4, saleItem.getQuantity());
             stmt.setDouble(5, saleItem.getUnitePrice());
-            stmt.setBigDecimal(6, saleItem.getTotalPrice());
+            stmt.setBigDecimal(6, itemTotal);
 
             stmt.executeUpdate();
 

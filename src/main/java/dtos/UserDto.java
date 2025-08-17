@@ -58,6 +58,6 @@ public class UserDto {
     }
 
     public void setActive(boolean active) {
-        active = active;
+        this.active = active;
     }
 }

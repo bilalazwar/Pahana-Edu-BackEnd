@@ -110,26 +110,33 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public boolean verifyUserPassword(String username, String enteredPassword) throws Exception {
+    public int verifyUserPassword(String username, String enteredPassword, int roleId) throws Exception {
 
-        String sql = "SELECT password FROM users WHERE username = ?";
+        String sql = "SELECT id, password FROM users WHERE username = ? AND role_id = ?";
 
         try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
             stmt.setString(1, username);
+            stmt.setInt(2, roleId);
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
                 String storedHash = rs.getString("password");
+                int id = rs.getInt("id");
+                System.out.println("ID============"+id);
 
                 // Hash the entered password and compare with stored hash
                 String hashedInput = PasswordUtil.hashPassword(enteredPassword);
                 System.out.println("Hash Password " +hashedInput);
                 System.out.println("Entered Password " +storedHash);
 
-                return storedHash.equals(hashedInput);  // If the hashes match, the password is correct
+                if(storedHash.equals(hashedInput)) {  // If the hashes match, the password is correct
+
+                    return id;
+
+                }
             }
         }
-        return false;  // User not found
+        return 0;  // User not found
     }
 
     @Override
@@ -162,7 +169,8 @@ public class UserDAOImpl implements UserDAO {
         LocalDateTime updatedAt = rs.getTimestamp("updated_at").toLocalDateTime();
         Timestamp lastLoginTS = rs.getTimestamp("last_login");
         LocalDateTime lastLogin = (lastLoginTS != null) ? lastLoginTS.toLocalDateTime() : null;
-        boolean isActive = rs.getBoolean("active");
+        boolean active = rs.getBoolean("active");
+//        System.out.println(username+ " == Active = "+active);
 
         UserType userType;
         switch (role_id) {
@@ -179,6 +187,6 @@ public class UserDAOImpl implements UserDAO {
                 throw new SQLException("Unknown role type: " + role_id);
         }
 
-        return UserFactory.createUser(userType, id, username, password, role_id, full_name, email, createdAt, updatedAt, lastLogin, isActive);
+        return UserFactory.createUser(userType, id, username, password, role_id, full_name, email, createdAt, updatedAt, lastLogin, active);
     }
 }

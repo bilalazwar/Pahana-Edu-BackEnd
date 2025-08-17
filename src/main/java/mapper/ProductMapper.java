@@ -59,15 +59,6 @@ public class ProductMapper {
         product.setQuantity(productDto.getQuantity());
         product.setCostPrice(productDto.getCostPrice());
 
-        // ✅ Set defaults or leave blank for internal fields
-//        product.setActive(true);                     // Default to active
-//        product.setDeleted(false);                   // Not deleted
-//        product.setCostPrice(0.0);                   // Unknown at this stage
-//        product.setInternalNotes(null);
-//        product.setCreatedBy(null);
-//        product.setCreatedAt(java.time.LocalDateTime.now());
-//        product.setUpdatedAt(java.time.LocalDateTime.now());
-
         return product;
     }
 }

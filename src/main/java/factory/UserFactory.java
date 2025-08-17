@@ -12,12 +12,11 @@ public class UserFactory {
 
     public static User createUser(UserType userType, int id, String username, String password, int roleid,
                                   String full_name, String email, LocalDateTime createdAt,
-                                  LocalDateTime updatedAt, LocalDateTime lastLogin, boolean isActive) {
+                                  LocalDateTime updatedAt, LocalDateTime lastLogin, boolean active) {
 
         if (userType == null) {
             throw new IllegalArgumentException("Invalid user type: null");
         }
-
         User user;
 
         switch (userType) {
@@ -44,7 +43,7 @@ public class UserFactory {
         user.setCreatedAt(createdAt);
         user.setUpdatedAt(updatedAt);
         user.setLastLogin(lastLogin);
-        user.setActive(isActive);
+        user.setActive(active);
 
         return user;
     }

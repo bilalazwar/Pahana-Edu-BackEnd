@@ -10,11 +10,9 @@ import dtos.UserRegistrationDto;
 import factory.UserFactory;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import mapper.UserMapper;
 import models.parent.User;
 import models.person.UserType;
-import models.rolePrivilege.Privilege;
 import models.rolePrivilege.RolePrivilege;
 import utils.PasswordUtil;
 
@@ -110,7 +108,7 @@ public class UserService {
     }
 
     // Authenticate user login
-    public boolean login(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public int login(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         User user = returUser(request);
         System.out.println(user);
@@ -120,20 +118,13 @@ public class UserService {
         if (user.getPassword() == null || user.getPassword().isEmpty())
             throw new IllegalArgumentException("Password cannot be empty");
 
-        boolean result = userDAO.verifyUserPassword(user.getUsername(), user.getPassword());
+        int userIdReturnsIfVerified = userDAO.verifyUserPassword(user.getUsername(), user.getPassword(), user.getRole_id());
 
-        if (result) {
-            // ✅ Create session
-            HttpSession session = request.getSession(true);
-            session.setMaxInactiveInterval(15 * 60); // 15 minutes
-            session.setAttribute("user_id", user.getId());
-            session.setAttribute("role_id", user.getRole_id());
+        if (userIdReturnsIfVerified>0) {
 
             List<RolePrivilege> rolePrivileges = rolePrivilegeDAO.getPrivilegesByRoleId(user.getRole_id());
-            session.setAttribute("rolePrivileges", rolePrivileges);
 
-
-            return true;
+            return userIdReturnsIfVerified;
         }
         else {
             throw new IllegalArgumentException("Invalid username or password");

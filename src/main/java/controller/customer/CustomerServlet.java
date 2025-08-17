@@ -28,6 +28,7 @@ public class CustomerServlet extends HttpServlet {
 
         try {
             customerService.addCustomer(objectMapper.readValue(request.getReader(), Customer.class));
+            response.setStatus(HttpServletResponse.SC_OK);
             response.getWriter().write("{\"message\": \"Customer details added successfully\"}");
         }
         catch (Exception ex) {
@@ -46,7 +47,6 @@ public class CustomerServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
 
         String pathInfo = request.getPathInfo();
-        System.out.println("pathInfo:=== " + pathInfo);
         String mobileNumberParam = request.getParameter("mobileNumber");
 
         try {
@@ -88,17 +88,6 @@ public class CustomerServlet extends HttpServlet {
             response.getWriter().write("{\"error\": \"Server error: " + ex.getMessage().replace("\"", "\\\"") + "\"}");
         }
     }
-
-
-
-
-
-
-
-
-
-
-
 
     // PUT http://localhost:8080/PahanaEduBackEnd/customers/{id}
     @Override

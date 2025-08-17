@@ -22,7 +22,7 @@ public class SaleService {
     private final SaleItemsDAO saleItemsDAO = new SaleItemsDAOImpl();
     private final SaleItemService saleItemService = new SaleItemService(saleItemsDAO);
 
-    public void createSale(Sale sale) throws Exception {
+    public void createSale1(Sale sale) throws Exception {
         if (sale == null) {
             throw new Exception("Sale is null.");
         }
@@ -33,13 +33,30 @@ public class SaleService {
         try {
 
             List<SaleItems> saleItemsList = sale.getItems();
-            for(SaleItems saleItems : saleItemsList){
-                saleItems.setTotalPrice(BigDecimal.valueOf(saleItems.getUnitePrice()*saleItems.getQuantity()));
+            for(SaleItems saleItem1 : saleItemsList){
+
+//                BigDecimal unitPrice = BigDecimal.valueOf(saleItem1.getUnitePrice());
+//                BigDecimal quantity = BigDecimal.valueOf(saleItem1.getQuantity());
+//                BigDecimal totalPrice = unitPrice.multiply(quantity);
+
+
+                Double unitPrice, totalPrice = 0.00;
+                int quantity = 0;
+                unitPrice = saleItem1.getUnitePrice();
+                quantity = saleItem1.getQuantity();
+                totalPrice = unitPrice * quantity;
+
+                BigDecimal price = new BigDecimal(totalPrice);
+
+
+                saleItem1.setTotalPrice(price);
+
             }
 
             BigDecimal totalAmount1 = BigDecimal.ZERO;
             for(SaleItems saleItems : saleItemsList){
                 totalAmount1 = totalAmount1.add(saleItems.getTotalPrice());
+                System.out.println("Individual Sale Items Price == "+ totalAmount1);
             }
 
             sale.setTotalAmount(totalAmount1);
@@ -49,8 +66,9 @@ public class SaleService {
 
                 for(SaleItems saleItems : saleItemsList){
                     saleItems.setSaleId(generatedId);
-                    saleItemsDAO.addSaleItem(saleItems);
-//                    System.out.println(saleItems.getProductName());
+//                    saleItemsDAO.addSaleItem(saleItems);
+                    saleItemService.addSaleItem(saleItems);
+                    System.out.println(saleItems.getProductName());
                 }
             }
         }
@@ -59,6 +77,38 @@ public class SaleService {
             throw new Exception("Failed to create sale: " + e.getMessage());
         }
     }
+
+    public void createSale(Sale sale) throws Exception {
+
+        List<SaleItems> saleItemsList = sale.getItems();
+
+        BigDecimal totalSaleAmount = BigDecimal.ZERO;
+
+        for (SaleItems saleItem : saleItemsList) {
+            BigDecimal unitPrice = BigDecimal.valueOf(saleItem.getUnitePrice());
+            BigDecimal quantity = BigDecimal.valueOf(saleItem.getQuantity());
+            BigDecimal itemTotal = unitPrice.multiply(quantity);
+
+            saleItem.setTotalPrice(itemTotal); //
+            totalSaleAmount = totalSaleAmount.add(itemTotal);
+        }
+
+        sale.setTotalAmount(totalSaleAmount);
+
+        int generatedId = saleDAO.addSale(sale);
+
+        if(generatedId != -1){
+
+            for(SaleItems saleItems : saleItemsList){
+                saleItems.setSaleId(generatedId);
+//                    saleItemsDAO.addSaleItem(saleItems);
+                saleItemService.addSaleItem(saleItems);
+                System.out.println(saleItems.getProductName());
+            }
+        }
+
+    }
+
 
     public Sale getSaleById(int id) throws Exception {
         if (id <= 0) {
