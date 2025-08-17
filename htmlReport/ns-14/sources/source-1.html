@@ -1,0 +1,170 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > SaleItemService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">services.saleService</a>
+</div>
+
+<h1>Coverage Summary for Class: SaleItemService (services.saleService)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">SaleItemService</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/16)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package services.saleService;
+&nbsp;
+&nbsp;import dao.implementations.ProductDAOImpl;
+&nbsp;import dao.interfaces.ProductDAO;
+&nbsp;import dao.interfaces.SaleItemsDAO;
+&nbsp;import models.sale.SaleItems;
+&nbsp;
+&nbsp;import java.math.BigDecimal;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;public class SaleItemService {
+&nbsp;
+&nbsp;    private final SaleItemsDAO saleItemsDAO;
+<b class="nc">&nbsp;    ProductDAO  productDAO = new ProductDAOImpl();</b>
+&nbsp;//    ProductDAO  productDAO;
+<b class="nc">&nbsp;    public SaleItemService(SaleItemsDAO saleItemsDAO) {</b>
+<b class="nc">&nbsp;        this.saleItemsDAO = saleItemsDAO;</b>
+&nbsp;//        this.productDAO =  new ProductDAOImpl();
+&nbsp;    }
+&nbsp;
+&nbsp;    public void addSaleItem(SaleItems saleItems) throws Exception {
+&nbsp;
+<b class="nc">&nbsp;        if(saleItems == null){</b>
+<b class="nc">&nbsp;            throw new Exception(&quot;Sale Items is Empty&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        saleItems.setTotalPrice(saleItems.getTotalPrice().multiply(BigDecimal.valueOf(saleItems.getQuantity())));</b>
+<b class="nc">&nbsp;        saleItemsDAO.addSaleItem(saleItems);</b>
+&nbsp;
+&nbsp;        // need to update the quantity.
+<b class="nc">&nbsp;        int currentQty = productDAO.getProductQuantity(saleItems.getProductId());</b>
+&nbsp;//        System.out.println(&quot;Current Quantity: &quot; + currentQty);
+<b class="nc">&nbsp;        int updatedQty = currentQty - saleItems.getQuantity();</b>
+<b class="nc">&nbsp;        saleItems.setQuantity(updatedQty);</b>
+<b class="nc">&nbsp;        productDAO.updateProductQuantity(saleItems.getProductId(), updatedQty);</b>
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    public SaleItems getSaleItemById(int id) throws Exception {
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public List&lt;SaleItems&gt; getSaleItemsBySaleId(int saleId) throws Exception {
+&nbsp;
+<b class="nc">&nbsp;        if (saleId &lt;= 0 || !saleExist(saleId)) {</b>
+<b class="nc">&nbsp;            throw new IllegalArgumentException(&quot;Invalid Sale Id.&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return saleItemsDAO.getSaleItemsBySaleId(saleId);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private boolean saleExist(int saleId) throws Exception {
+<b class="nc">&nbsp;        return saleItemsDAO.saleExist(saleId);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-08-17 19:08</div>
+</div>
+</body>
+</html>

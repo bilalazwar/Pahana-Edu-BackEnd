@@ -1,0 +1,270 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > ProductServlet</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">controller.product</a>
+</div>
+
+<h1>Coverage Summary for Class: ProductServlet (controller.product)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ProductServlet</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/18)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/62)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package controller.product;
+&nbsp;
+&nbsp;import com.fasterxml.jackson.databind.ObjectMapper;
+&nbsp;import dao.implementations.ProductDAOImpl;
+&nbsp;import dtos.ProductDto;
+&nbsp;import jakarta.servlet.ServletException;
+&nbsp;import jakarta.servlet.annotation.WebServlet;
+&nbsp;import jakarta.servlet.http.HttpServlet;
+&nbsp;import jakarta.servlet.http.HttpServletRequest;
+&nbsp;import jakarta.servlet.http.HttpServletResponse;
+&nbsp;import models.product.Product;
+&nbsp;import services.productService.ProductService;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@WebServlet(&quot;/products/*&quot;)
+<b class="nc">&nbsp;public class ProductServlet extends HttpServlet {</b>
+&nbsp;
+<b class="nc">&nbsp;    ProductDAOImpl productDAOImpl = new ProductDAOImpl();</b>
+<b class="nc">&nbsp;    private final ProductService productService = new ProductService(productDAOImpl);</b>
+<b class="nc">&nbsp;    private final ObjectMapper objectMapper = new ObjectMapper(); // Jackson for JSON</b>
+&nbsp;
+&nbsp;    @Override
+&nbsp;    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+&nbsp;            throws ServletException, IOException {
+&nbsp;
+<b class="nc">&nbsp;        response.setContentType(&quot;application/json&quot;);</b>
+<b class="nc">&nbsp;        response.setCharacterEncoding(&quot;UTF-8&quot;);</b>
+&nbsp;
+&nbsp;        try {
+<b class="nc">&nbsp;            productService.addProduct(objectMapper.readValue(request.getReader(), Product.class));</b>
+<b class="nc">&nbsp;            response.getWriter().write(&quot;{\&quot;message\&quot;: \&quot;Product details added successfully\&quot;}&quot;);</b>
+&nbsp;        }
+&nbsp;        catch (Exception ex) {
+<b class="nc">&nbsp;            ex.printStackTrace();</b>
+<b class="nc">&nbsp;            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);</b>
+<b class="nc">&nbsp;            response.getWriter().write(&quot;{\&quot;error\&quot;: \&quot;Server error: &quot; + ex.getMessage().replace(&quot;\&quot;&quot;, &quot;\\\&quot;&quot;) + &quot;\&quot;}&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    // GET http://localhost:8080/PahanaEduBackEnd/products (get all)
+&nbsp;    // GET http://localhost:8080/PahanaEduBackEnd/products/{id} (get by id)
+&nbsp;    // GET http://localhost:8080/PahanaEduBackEnd/products/barcode/{barcode} (get by barcode)
+&nbsp;    // GET http://localhost:8080/PahanaEduBackEnd/products/{id}/quantity (get quantity)
+&nbsp;    @Override
+&nbsp;    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+&nbsp;            throws ServletException, IOException {
+&nbsp;
+<b class="nc">&nbsp;        response.setContentType(&quot;application/json&quot;);</b>
+<b class="nc">&nbsp;        response.setCharacterEncoding(&quot;UTF-8&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;        String pathInfo = request.getPathInfo();</b>
+&nbsp;
+&nbsp;        try {
+<b class="nc">&nbsp;            if (pathInfo == null || pathInfo.equals(&quot;/&quot;)) {</b>
+&nbsp;                // Handle GET all products
+<b class="nc">&nbsp;                List&lt;ProductDto&gt; allProducts = productService.getAllProducts();</b>
+<b class="nc">&nbsp;                response.getWriter().write(objectMapper.writeValueAsString(allProducts));</b>
+&nbsp;            }
+<b class="nc">&nbsp;            else if (pathInfo.startsWith(&quot;/barcode/&quot;)) {</b>
+&nbsp;                // Handle GET by barcode
+<b class="nc">&nbsp;                String barcode = pathInfo.substring(9); // Extract barcode after &quot;/barcode/&quot;</b>
+<b class="nc">&nbsp;                ProductDto product = productService.getProductByBarcode(Long.parseLong(barcode));</b>
+<b class="nc">&nbsp;                response.getWriter().write(objectMapper.writeValueAsString(product));</b>
+&nbsp;            }
+<b class="nc">&nbsp;            else if (pathInfo.endsWith(&quot;/quantity&quot;)) {</b>
+&nbsp;                // Handle GET quantity
+<b class="nc">&nbsp;                String idStr = pathInfo.substring(1, pathInfo.indexOf(&quot;/quantity&quot;));</b>
+<b class="nc">&nbsp;                int quantity = productService.getProductQuantity(Integer.parseInt(idStr));</b>
+<b class="nc">&nbsp;                response.getWriter().write(&quot;{\&quot;quantity\&quot;: &quot; + quantity + &quot;}&quot;);</b>
+&nbsp;            }
+&nbsp;            else {
+&nbsp;                // Handle GET by ID (default case)
+<b class="nc">&nbsp;                String idStr = pathInfo.substring(1); // Remove leading slash</b>
+<b class="nc">&nbsp;                ProductDto product = productService.getProductById(Integer.parseInt(idStr));</b>
+<b class="nc">&nbsp;                response.getWriter().write(objectMapper.writeValueAsString(product));</b>
+&nbsp;            }
+&nbsp;
+&nbsp;        } catch (NumberFormatException e) {
+<b class="nc">&nbsp;            response.sendError(HttpServletResponse.SC_BAD_REQUEST, &quot;Invalid ID or barcode format&quot;);</b>
+&nbsp;        } catch (Exception ex) {
+<b class="nc">&nbsp;            ex.printStackTrace();</b>
+<b class="nc">&nbsp;            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);</b>
+<b class="nc">&nbsp;            response.getWriter().write(&quot;{\&quot;error\&quot;: \&quot;Server error: &quot; + ex.getMessage().replace(&quot;\&quot;&quot;, &quot;\\\&quot;&quot;) + &quot;\&quot;}&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    // PUT http://localhost:8080/PahanaEduBackEnd/products/{id} (full update)
+&nbsp;    // PUT http://localhost:8080/PahanaEduBackEnd/products/{id}/quantity?value={} (quantity update)
+&nbsp;    @Override
+&nbsp;    protected void doPut(HttpServletRequest request, HttpServletResponse response)
+&nbsp;            throws ServletException, IOException {
+&nbsp;
+<b class="nc">&nbsp;        response.setContentType(&quot;application/json&quot;);</b>
+<b class="nc">&nbsp;        response.setCharacterEncoding(&quot;UTF-8&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;        String pathInfo = request.getPathInfo();</b>
+&nbsp;
+&nbsp;        try {
+<b class="nc">&nbsp;            if (pathInfo != null &amp;&amp; !pathInfo.isEmpty()) {</b>
+<b class="nc">&nbsp;                if (pathInfo.endsWith(&quot;/quantity&quot;)) {</b>
+&nbsp;                    // Handle quantity update
+<b class="nc">&nbsp;                    String idStr = pathInfo.substring(1, pathInfo.indexOf(&quot;/quantity&quot;));</b>
+<b class="nc">&nbsp;                    String qtyParam = request.getParameter(&quot;value&quot;);</b>
+<b class="nc">&nbsp;                    productService.updateProductQuantity(Integer.parseInt(idStr), Integer.parseInt(qtyParam));</b>
+<b class="nc">&nbsp;                    response.getWriter().write(&quot;{\&quot;message\&quot;: \&quot;Product quantity updated successfully\&quot;}&quot;);</b>
+&nbsp;                } else {
+&nbsp;                    // Handle full product update
+<b class="nc">&nbsp;                    String idStr = pathInfo.substring(1);</b>
+<b class="nc">&nbsp;                    Product product = objectMapper.readValue(request.getReader(), Product.class);</b>
+<b class="nc">&nbsp;                    productService.updateProduct(product, Integer.parseInt(idStr));</b>
+<b class="nc">&nbsp;                    response.getWriter().write(&quot;{\&quot;message\&quot;: \&quot;Product details updated successfully\&quot;}&quot;);</b>
+&nbsp;                }
+&nbsp;            }
+&nbsp;            else {
+<b class="nc">&nbsp;                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);</b>
+<b class="nc">&nbsp;                response.getWriter().write(&quot;{\&quot;error\&quot;: \&quot;Product ID is required\&quot;}&quot;);</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;        catch (Exception ex) {
+<b class="nc">&nbsp;            ex.printStackTrace();</b>
+<b class="nc">&nbsp;            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);</b>
+<b class="nc">&nbsp;            response.getWriter().write(&quot;{\&quot;error\&quot;: \&quot;Server error: &quot; + ex.getMessage().replace(&quot;\&quot;&quot;, &quot;\\\&quot;&quot;) + &quot;\&quot;}&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    // DELETE http://localhost:8080/PahanaEduBackEnd/products/{id}
+&nbsp;    @Override
+&nbsp;    protected void doDelete(HttpServletRequest request, HttpServletResponse response)
+&nbsp;            throws ServletException, IOException {
+<b class="nc">&nbsp;        response.setContentType(&quot;application/json&quot;);</b>
+<b class="nc">&nbsp;        response.setCharacterEncoding(&quot;UTF-8&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;        String pathInfo = request.getPathInfo();</b>
+&nbsp;
+&nbsp;        try {
+<b class="nc">&nbsp;            if (pathInfo != null &amp;&amp; !pathInfo.isEmpty()) {</b>
+<b class="nc">&nbsp;                String idStr = pathInfo.substring(1);</b>
+<b class="nc">&nbsp;                productService.deleteProduct(Integer.parseInt(idStr));</b>
+<b class="nc">&nbsp;                response.getWriter().write(&quot;{\&quot;message\&quot;: \&quot;Product deleted successfully\&quot;}&quot;);</b>
+&nbsp;            }
+&nbsp;            else {
+<b class="nc">&nbsp;                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);</b>
+<b class="nc">&nbsp;                response.getWriter().write(&quot;{\&quot;error\&quot;: \&quot;Product ID is required\&quot;}&quot;);</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;        catch (Exception ex) {
+<b class="nc">&nbsp;            ex.printStackTrace();</b>
+<b class="nc">&nbsp;            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);</b>
+<b class="nc">&nbsp;            response.getWriter().write(&quot;{\&quot;error\&quot;: \&quot;Server error: &quot; + ex.getMessage().replace(&quot;\&quot;&quot;, &quot;\\\&quot;&quot;) + &quot;\&quot;}&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-08-17 19:08</div>
+</div>
+</body>
+</html>

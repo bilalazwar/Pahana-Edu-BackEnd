@@ -1,0 +1,319 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > UserServlet</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">controller.user</a>
+</div>
+
+<h1>Coverage Summary for Class: UserServlet (controller.user)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">UserServlet</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/30)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/77)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package controller.user;
+&nbsp;
+&nbsp;import com.fasterxml.jackson.databind.ObjectMapper;
+&nbsp;import dao.implementations.RolePrivilegeImpl;
+&nbsp;import dao.implementations.UserDAOImpl;
+&nbsp;import dao.interfaces.RolePrivilegeDAO;
+&nbsp;import dao.interfaces.UserDAO;
+&nbsp;import dtos.UserDto;
+&nbsp;import jakarta.servlet.ServletException;
+&nbsp;import jakarta.servlet.annotation.WebServlet;
+&nbsp;import jakarta.servlet.http.HttpServlet;
+&nbsp;import jakarta.servlet.http.HttpServletRequest;
+&nbsp;import jakarta.servlet.http.HttpServletResponse;
+&nbsp;import mapper.UserMapper;
+&nbsp;import models.parent.User;
+&nbsp;import services.userService.UserAuthenticationService;
+&nbsp;import services.userService.UserManagementService;
+&nbsp;import services.userService.UserRegistrationService;
+&nbsp;import services.userService.UserService;
+&nbsp;import java.io.IOException;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@WebServlet(&quot;/users/*&quot;)
+&nbsp;public class UserServlet extends HttpServlet {
+&nbsp;
+<b class="nc">&nbsp;    private final UserService userService = new UserService();</b>
+&nbsp;    private final ObjectMapper objectMapper;
+&nbsp;
+&nbsp;    private final UserAuthenticationService userAuthenticationService;
+&nbsp;    private final UserDAO userDAO;
+&nbsp;    private final RolePrivilegeDAO rolePrivilegeDAO;
+&nbsp;
+&nbsp;    private final UserManagementService userManagementService;
+&nbsp;    private final UserRegistrationService userRegistrationService;
+&nbsp;
+<b class="nc">&nbsp;    public UserServlet() {</b>
+<b class="nc">&nbsp;        this.objectMapper = new ObjectMapper();</b>
+<b class="nc">&nbsp;        this.userDAO = new UserDAOImpl();</b>
+<b class="nc">&nbsp;        this.rolePrivilegeDAO = new RolePrivilegeImpl();</b>
+<b class="nc">&nbsp;        this.userAuthenticationService = new UserAuthenticationService(userDAO,rolePrivilegeDAO, objectMapper);</b>
+&nbsp;
+<b class="nc">&nbsp;        this.userManagementService = new UserManagementService(userDAO, objectMapper);</b>
+<b class="nc">&nbsp;        this.userRegistrationService = new UserRegistrationService(userDAO,objectMapper);</b>
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    // POST http://localhost:8080/PahanaEduBackEnd/users/register
+&nbsp;    // POST http://localhost:8080/PahanaEduBackEnd/users/login
+&nbsp;    @Override
+&nbsp;    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+&nbsp;            throws ServletException, IOException {
+&nbsp;
+<b class="nc">&nbsp;        response.setContentType(&quot;application/json&quot;);</b>
+<b class="nc">&nbsp;        response.setCharacterEncoding(&quot;UTF-8&quot;);</b>
+&nbsp;
+&nbsp;        try {
+<b class="nc">&nbsp;            String pathInfo = request.getPathInfo();</b>
+&nbsp;
+<b class="nc">&nbsp;            if (pathInfo == null || pathInfo.equals(&quot;/&quot;)) {</b>
+<b class="nc">&nbsp;                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);</b>
+<b class="nc">&nbsp;                response.getWriter().write(&quot;{\&quot;error\&quot;: \&quot;Endpoint required (register/login)\&quot;}&quot;);</b>
+&nbsp;                return;
+&nbsp;            }
+&nbsp;
+<b class="nc">&nbsp;            switch (pathInfo.substring(1)) {</b>
+&nbsp;                case &quot;register&quot;:
+<b class="nc">&nbsp;                    userService.registerUser(request);</b>
+<b class="nc">&nbsp;                    response.getWriter().write(&quot;{\&quot;message\&quot;: \&quot;Registered Successfully\&quot;}&quot;);</b>
+&nbsp;                    break;
+&nbsp;                case &quot;login&quot;:
+<b class="nc">&nbsp;                    int loginSuccessWithUserId = userAuthenticationService.login(request, response);</b>
+<b class="nc">&nbsp;                    response.getWriter().write(&quot;{\&quot;message\&quot;: \&quot;Login successful\&quot;, \&quot;userId\&quot;: &quot; + loginSuccessWithUserId + &quot;}&quot;);</b>
+&nbsp;                    //userService.login(request, response);
+&nbsp;//                    response.getWriter().write(&quot;{\&quot;message\&quot;: \&quot;Login successful\&quot;}&quot;);
+&nbsp;                    break;
+&nbsp;                default:
+<b class="nc">&nbsp;                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);</b>
+<b class="nc">&nbsp;                    response.getWriter().write(&quot;{\&quot;error\&quot;: \&quot;Invalid endpoint\&quot;}&quot;);</b>
+&nbsp;            }
+&nbsp;        } catch (Exception ex) {
+<b class="nc">&nbsp;            ex.printStackTrace();</b>
+<b class="nc">&nbsp;            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);</b>
+<b class="nc">&nbsp;            response.getWriter().write(&quot;{\&quot;error\&quot;: \&quot;Server error: &quot; + ex.getMessage() + &quot;\&quot;}&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    // GET http://localhost:8080/PahanaEduBackEnd/users (get all)
+&nbsp;    // GET http://localhost:8080/PahanaEduBackEnd/users/{id} (get by id)
+&nbsp;    @Override
+&nbsp;    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+&nbsp;            throws ServletException, IOException {
+&nbsp;
+<b class="nc">&nbsp;        response.setContentType(&quot;application/json&quot;);</b>
+<b class="nc">&nbsp;        response.setCharacterEncoding(&quot;UTF-8&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;        String pathInfo = request.getPathInfo();</b>
+&nbsp;
+&nbsp;        try {
+<b class="nc">&nbsp;            if (pathInfo != null &amp;&amp; pathInfo.equals(&quot;/login&quot;)) {</b>
+&nbsp;                // Handle login
+&nbsp;                try {
+<b class="nc">&nbsp;                    int loginSuccessWithUserId = userAuthenticationService.login(request, response);</b>
+&nbsp;
+<b class="nc">&nbsp;                    if (loginSuccessWithUserId&gt;0) {</b>
+<b class="nc">&nbsp;                        response.setStatus(HttpServletResponse.SC_OK);</b>
+&nbsp;//                        response.getWriter().write(&quot;{\&quot;message\&quot;: \&quot;Login successful\&quot;}&quot;);
+<b class="nc">&nbsp;                        response.getWriter().write(&quot;{\&quot;message\&quot;: \&quot;Login successful\&quot;, \&quot;userId\&quot;: &quot; + loginSuccessWithUserId + &quot;}&quot;);</b>
+&nbsp;                    } else {
+<b class="nc">&nbsp;                        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);</b>
+<b class="nc">&nbsp;                        response.getWriter().write(&quot;{\&quot;error\&quot;: \&quot;Login failed\&quot;}&quot;);</b>
+&nbsp;                    }
+&nbsp;                } catch (IllegalArgumentException e) {
+<b class="nc">&nbsp;                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);</b>
+<b class="nc">&nbsp;                    response.getWriter().write(&quot;{\&quot;error\&quot;: \&quot;&quot; + e.getMessage().replace(&quot;\&quot;&quot;, &quot;\\\&quot;&quot;) + &quot;\&quot;}&quot;);</b>
+&nbsp;                }
+<b class="nc">&nbsp;            } else if (pathInfo == null || pathInfo.equals(&quot;/&quot;)) {</b>
+&nbsp;                // Get all users
+<b class="nc">&nbsp;                List&lt;UserDto&gt; users = userManagementService.getAllUsers();</b>
+&nbsp;
+<b class="nc">&nbsp;                response.getWriter().write(objectMapper.writeValueAsString(users));</b>
+&nbsp;            } else {
+&nbsp;                // Get user by ID
+<b class="nc">&nbsp;                String id = pathInfo.substring(1);</b>
+<b class="nc">&nbsp;                User user = userManagementService.getUserById(Integer.parseInt(id));</b>
+<b class="nc">&nbsp;                UserDto userDto = UserMapper.toDTO(user);</b>
+<b class="nc">&nbsp;                response.getWriter().write(objectMapper.writeValueAsString(userDto));</b>
+&nbsp;            }
+&nbsp;
+&nbsp;        } catch (Exception ex) {
+<b class="nc">&nbsp;            ex.printStackTrace();</b>
+<b class="nc">&nbsp;            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);</b>
+<b class="nc">&nbsp;            response.getWriter().write(&quot;{\&quot;error\&quot;: \&quot;Server error: &quot; + ex.getMessage().replace(&quot;\&quot;&quot;, &quot;\\\&quot;&quot;) + &quot;\&quot;}&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    // PUT http://localhost:8080/PahanaEduBackEnd/users/{id} (update details)
+&nbsp;    // PUT http://localhost:8080/PahanaEduBackEnd/users/{id}/password (update password)
+&nbsp;    @Override
+&nbsp;    protected void doPut(HttpServletRequest request, HttpServletResponse response)
+&nbsp;            throws ServletException, IOException {
+&nbsp;
+<b class="nc">&nbsp;        response.setContentType(&quot;application/json&quot;);</b>
+<b class="nc">&nbsp;        response.setCharacterEncoding(&quot;UTF-8&quot;);</b>
+<b class="nc">&nbsp;        String pathInfo = request.getPathInfo();</b>
+&nbsp;
+&nbsp;        try {
+<b class="nc">&nbsp;            if (pathInfo == null || pathInfo.equals(&quot;/&quot;)) {</b>
+<b class="nc">&nbsp;                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);</b>
+<b class="nc">&nbsp;                response.getWriter().write(&quot;{\&quot;error\&quot;: \&quot;User ID required\&quot;}&quot;);</b>
+&nbsp;                return;
+&nbsp;            }
+&nbsp;
+<b class="nc">&nbsp;            String[] parts = pathInfo.split(&quot;/&quot;);</b>
+<b class="nc">&nbsp;            if (parts.length &lt; 2) {</b>
+<b class="nc">&nbsp;                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);</b>
+<b class="nc">&nbsp;                response.getWriter().write(&quot;{\&quot;error\&quot;: \&quot;Invalid path\&quot;}&quot;);</b>
+&nbsp;                return;
+&nbsp;            }
+&nbsp;
+<b class="nc">&nbsp;            String id = parts[1];</b>
+&nbsp;
+<b class="nc">&nbsp;            if (parts.length &gt; 2 &amp;&amp; parts[2].equals(&quot;password&quot;)) {</b>
+&nbsp;                // Update password
+<b class="nc">&nbsp;                userManagementService.updateUserPassword(request, response);</b>
+<b class="nc">&nbsp;                response.getWriter().write(&quot;{\&quot;message\&quot;: \&quot;Password updated\&quot;}&quot;);</b>
+&nbsp;            } else {
+&nbsp;                // Update user details
+<b class="nc">&nbsp;                userManagementService.updateUser(request, response, id);</b>
+<b class="nc">&nbsp;                response.getWriter().write(&quot;{\&quot;message\&quot;: \&quot;User updated\&quot;}&quot;);</b>
+&nbsp;            }
+&nbsp;        } catch (Exception ex) {
+<b class="nc">&nbsp;            ex.printStackTrace();</b>
+<b class="nc">&nbsp;            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);</b>
+<b class="nc">&nbsp;            response.getWriter().write(&quot;{\&quot;error\&quot;: \&quot;Update failed: &quot; + ex.getMessage() + &quot;\&quot;}&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    // DELETE http://localhost:8080/PahanaEduBackEnd/users/{id}
+&nbsp;    @Override
+&nbsp;    protected void doDelete(HttpServletRequest request, HttpServletResponse response)
+&nbsp;            throws ServletException, IOException {
+&nbsp;
+<b class="nc">&nbsp;        response.setContentType(&quot;application/json&quot;);</b>
+<b class="nc">&nbsp;        response.setCharacterEncoding(&quot;UTF-8&quot;);</b>
+<b class="nc">&nbsp;        String pathInfo = request.getPathInfo();</b>
+&nbsp;
+&nbsp;        try {
+<b class="nc">&nbsp;            if (pathInfo == null || pathInfo.equals(&quot;/&quot;)) {</b>
+<b class="nc">&nbsp;                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);</b>
+<b class="nc">&nbsp;                response.getWriter().write(&quot;{\&quot;error\&quot;: \&quot;User ID required\&quot;}&quot;);</b>
+&nbsp;                return;
+&nbsp;            }
+&nbsp;
+<b class="nc">&nbsp;            String id = pathInfo.substring(1);</b>
+<b class="nc">&nbsp;            userManagementService.deleteUser(Integer.parseInt(id));</b>
+<b class="nc">&nbsp;            response.getWriter().write(&quot;{\&quot;message\&quot;: \&quot;User deleted\&quot;}&quot;);</b>
+&nbsp;        } catch (Exception ex) {
+<b class="nc">&nbsp;            ex.printStackTrace();</b>
+<b class="nc">&nbsp;            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);</b>
+<b class="nc">&nbsp;            response.getWriter().write(&quot;{\&quot;error\&quot;: \&quot;Delete failed: &quot; + ex.getMessage() + &quot;\&quot;}&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-08-17 19:08</div>
+</div>
+</body>
+</html>

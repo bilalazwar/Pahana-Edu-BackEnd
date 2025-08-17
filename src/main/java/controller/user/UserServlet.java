@@ -1,6 +1,10 @@
 package controller.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dao.implementations.RolePrivilegeImpl;
+import dao.implementations.UserDAOImpl;
+import dao.interfaces.RolePrivilegeDAO;
+import dao.interfaces.UserDAO;
 import dtos.UserDto;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -9,6 +13,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import mapper.UserMapper;
 import models.parent.User;
+import services.userService.UserAuthenticationService;
+import services.userService.UserManagementService;
+import services.userService.UserRegistrationService;
 import services.userService.UserService;
 import java.io.IOException;
 import java.util.List;
@@ -16,8 +23,26 @@ import java.util.List;
 @WebServlet("/users/*")
 public class UserServlet extends HttpServlet {
 
-    private final UserService userService = new UserService();
-    private final ObjectMapper objectMapper = new ObjectMapper();
+//    private final UserService userService = new UserService();
+    private final ObjectMapper objectMapper;
+
+    private final UserAuthenticationService userAuthenticationService;
+    private final UserDAO userDAO;
+    private final RolePrivilegeDAO rolePrivilegeDAO;
+
+    private final UserManagementService userManagementService;
+    private final UserRegistrationService userRegistrationService;
+
+    public UserServlet() {
+        this.objectMapper = new ObjectMapper();
+        this.userDAO = new UserDAOImpl();
+        this.rolePrivilegeDAO = new RolePrivilegeImpl();
+        this.userAuthenticationService = new UserAuthenticationService(userDAO,rolePrivilegeDAO, objectMapper);
+
+        this.userManagementService = new UserManagementService(userDAO, objectMapper);
+        this.userRegistrationService = new UserRegistrationService(userDAO,objectMapper);
+
+    }
 
     // POST http://localhost:8080/PahanaEduBackEnd/users/register
     // POST http://localhost:8080/PahanaEduBackEnd/users/login
@@ -39,11 +64,11 @@ public class UserServlet extends HttpServlet {
 
             switch (pathInfo.substring(1)) {
                 case "register":
-                    userService.registerUser(request);
+                    userRegistrationService.registerUser(request);
                     response.getWriter().write("{\"message\": \"Registered Successfully\"}");
                     break;
                 case "login":
-                    int loginSuccessWithUserId = userService.login(request, response);
+                    int loginSuccessWithUserId = userAuthenticationService.login(request, response);
                     response.getWriter().write("{\"message\": \"Login successful\", \"userId\": " + loginSuccessWithUserId + "}");
                     //userService.login(request, response);
 //                    response.getWriter().write("{\"message\": \"Login successful\"}");
@@ -74,7 +99,7 @@ public class UserServlet extends HttpServlet {
             if (pathInfo != null && pathInfo.equals("/login")) {
                 // Handle login
                 try {
-                    int loginSuccessWithUserId = userService.login(request, response);
+                    int loginSuccessWithUserId = userAuthenticationService.login(request, response);
 
                     if (loginSuccessWithUserId>0) {
                         response.setStatus(HttpServletResponse.SC_OK);
@@ -90,13 +115,13 @@ public class UserServlet extends HttpServlet {
                 }
             } else if (pathInfo == null || pathInfo.equals("/")) {
                 // Get all users
-                List<UserDto> users = userService.getAllUsers();
+                List<UserDto> users = userManagementService.getAllUsers();
 
                 response.getWriter().write(objectMapper.writeValueAsString(users));
             } else {
                 // Get user by ID
                 String id = pathInfo.substring(1);
-                User user = userService.getUserById(Integer.parseInt(id));
+                User user = userManagementService.getUserById(Integer.parseInt(id));
                 UserDto userDto = UserMapper.toDTO(user);
                 response.getWriter().write(objectMapper.writeValueAsString(userDto));
             }
@@ -136,11 +161,11 @@ public class UserServlet extends HttpServlet {
 
             if (parts.length > 2 && parts[2].equals("password")) {
                 // Update password
-                userService.updateUserPassword(request, response);
+                userManagementService.updateUserPassword(request, response);
                 response.getWriter().write("{\"message\": \"Password updated\"}");
             } else {
                 // Update user details
-                userService.updateUser(request, response, id);
+                userManagementService.updateUser(request, response, id);
                 response.getWriter().write("{\"message\": \"User updated\"}");
             }
         } catch (Exception ex) {
@@ -167,7 +192,7 @@ public class UserServlet extends HttpServlet {
             }
 
             String id = pathInfo.substring(1);
-            userService.deleteUser(Integer.parseInt(id));
+            userManagementService.deleteUser(Integer.parseInt(id));
             response.getWriter().write("{\"message\": \"User deleted\"}");
         } catch (Exception ex) {
             ex.printStackTrace();

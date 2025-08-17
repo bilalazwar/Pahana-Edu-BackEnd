@@ -1,0 +1,221 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > RoleDAOImpl</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">dao.implementations</a>
+</div>
+
+<h1>Coverage Summary for Class: RoleDAOImpl (dao.implementations)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">RoleDAOImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/44)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package dao.implementations;
+&nbsp;
+&nbsp;import dao.interfaces.RoleDAO;
+&nbsp;import models.rolePrivilege.Role;
+&nbsp;import utils.DBConnectionUtil;
+&nbsp;import java.sql.Connection;
+&nbsp;import java.sql.PreparedStatement;
+&nbsp;import java.sql.ResultSet;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;
+<b class="nc">&nbsp;public class RoleDAOImpl implements RoleDAO {</b>
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void addRole(String roleName) throws Exception {
+<b class="nc">&nbsp;        String sql = &quot;INSERT INTO Roles (name) VALUES (?)&quot;;</b>
+&nbsp;
+<b class="nc">&nbsp;        try (Connection conn = DBConnectionUtil.getInstance().getConnection();</b>
+<b class="nc">&nbsp;             PreparedStatement stmt = conn.prepareStatement(sql)) {</b>
+&nbsp;
+<b class="nc">&nbsp;            stmt.setString(1, roleName);</b>
+<b class="nc">&nbsp;            stmt.executeUpdate();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public Role getRoleById(int id) throws Exception {
+<b class="nc">&nbsp;        String sql = &quot;SELECT id, name FROM Roles WHERE id = ?&quot;;</b>
+&nbsp;
+<b class="nc">&nbsp;        try (Connection conn = DBConnectionUtil.getInstance().getConnection();</b>
+<b class="nc">&nbsp;             PreparedStatement stmt = conn.prepareStatement(sql)) {</b>
+&nbsp;
+<b class="nc">&nbsp;            stmt.setInt(1, id);</b>
+&nbsp;
+<b class="nc">&nbsp;            try (ResultSet rs = stmt.executeQuery()) {</b>
+<b class="nc">&nbsp;                if (rs.next()) {</b>
+<b class="nc">&nbsp;                    Role role = new Role();</b>
+<b class="nc">&nbsp;                    role.setId(rs.getInt(&quot;id&quot;));</b>
+<b class="nc">&nbsp;                    role.setName(rs.getString(&quot;name&quot;));</b>
+<b class="nc">&nbsp;                    return role;</b>
+&nbsp;                }
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        return null; // Role not found</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;Role&gt; getAllRoles() throws Exception {
+&nbsp;
+<b class="nc">&nbsp;        String sql = &quot;SELECT * FROM Roles&quot;;</b>
+<b class="nc">&nbsp;        List&lt;Role&gt; roles = new ArrayList&lt;&gt;();</b>
+&nbsp;
+<b class="nc">&nbsp;        try (Connection conn = DBConnectionUtil.getInstance().getConnection();</b>
+<b class="nc">&nbsp;             PreparedStatement stmt = conn.prepareStatement(sql);</b>
+<b class="nc">&nbsp;             ResultSet rs = stmt.executeQuery()) {</b>
+&nbsp;
+<b class="nc">&nbsp;            while (rs.next()) {</b>
+<b class="nc">&nbsp;                roles.add(new Role(rs.getInt(&quot;id&quot;), rs.getString(&quot;name&quot;)));</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        return roles;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void updateRole(Role role) throws Exception {
+<b class="nc">&nbsp;        String sql = &quot;UPDATE Roles SET name = ? WHERE id = ?&quot;;</b>
+&nbsp;
+<b class="nc">&nbsp;        try (Connection conn = DBConnectionUtil.getInstance().getConnection();</b>
+<b class="nc">&nbsp;             PreparedStatement stmt = conn.prepareStatement(sql)) {</b>
+&nbsp;
+<b class="nc">&nbsp;            stmt.setString(1, role.getName());</b>
+<b class="nc">&nbsp;            stmt.setInt(2, role.getId());</b>
+<b class="nc">&nbsp;            stmt.executeUpdate();</b>
+&nbsp;
+&nbsp;        } catch (Exception e) {
+<b class="nc">&nbsp;            e.printStackTrace();</b>
+<b class="nc">&nbsp;            throw new Exception(&quot;Failed to update role name: &quot; + e.getMessage(), e);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public String deleteRoleById(int id) throws Exception {
+<b class="nc">&nbsp;        String sql = &quot;DELETE FROM Roles WHERE id = ?&quot;;</b>
+<b class="nc">&nbsp;        int affectedRows = 0;</b>
+&nbsp;
+<b class="nc">&nbsp;        try (Connection conn = DBConnectionUtil.getInstance().getConnection();</b>
+<b class="nc">&nbsp;             PreparedStatement stmt = conn.prepareStatement(sql)) {</b>
+&nbsp;
+<b class="nc">&nbsp;            stmt.setInt(1, id);</b>
+<b class="nc">&nbsp;            affectedRows = stmt.executeUpdate();</b>
+&nbsp;
+&nbsp;        } catch (Exception e) {
+<b class="nc">&nbsp;            e.printStackTrace();</b>
+<b class="nc">&nbsp;            throw new Exception(&quot;Failed to delete role: &quot; + e.getMessage(), e);</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        if (affectedRows == 1) {</b>
+<b class="nc">&nbsp;            return &quot;Deleted role with ID: &quot; + id;</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            return &quot;No role found with ID: &quot; + id;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-08-17 19:08</div>
+</div>
+</body>
+</html>

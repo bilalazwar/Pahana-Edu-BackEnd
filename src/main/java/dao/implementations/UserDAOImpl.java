@@ -170,7 +170,6 @@ public class UserDAOImpl implements UserDAO {
         Timestamp lastLoginTS = rs.getTimestamp("last_login");
         LocalDateTime lastLogin = (lastLoginTS != null) ? lastLoginTS.toLocalDateTime() : null;
         boolean active = rs.getBoolean("active");
-//        System.out.println(username+ " == Active = "+active);
 
         UserType userType;
         switch (role_id) {

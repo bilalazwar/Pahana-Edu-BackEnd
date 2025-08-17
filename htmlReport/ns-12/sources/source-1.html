@@ -1,0 +1,198 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > PrivilegeService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">services.privilegeRoleService</a>
+</div>
+
+<h1>Coverage Summary for Class: PrivilegeService (services.privilegeRoleService)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PrivilegeService</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/24)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package services.privilegeRoleService;
+&nbsp;
+&nbsp;import dao.implementations.PrivilegeDAOImpl;
+&nbsp;import dao.interfaces.PrivilegeDAO;
+&nbsp;import dtos.PrivilegeDTO;
+&nbsp;import mapper.PrivilegeMapper;
+&nbsp;import models.rolePrivilege.Privilege;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;public class PrivilegeService {
+&nbsp;
+&nbsp;    private final PrivilegeDAO privilegeDAO;
+&nbsp;
+&nbsp;    // Constructor injection (Manual Dependency Injection)
+<b class="nc">&nbsp;    public PrivilegeService(PrivilegeDAO privilegeDAO) {</b>
+<b class="nc">&nbsp;        this.privilegeDAO = privilegeDAO;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String addPrivilege(PrivilegeDTO privilegeDTO) throws Exception {
+&nbsp;
+<b class="nc">&nbsp;        String name = privilegeDTO.getName();</b>
+&nbsp;
+<b class="nc">&nbsp;        if (name != null &amp;&amp; name.trim().length() &gt; 3) {</b>
+&nbsp;
+<b class="nc">&nbsp;            Privilege  privilege = PrivilegeMapper.toModel(privilegeDTO);</b>
+<b class="nc">&nbsp;            privilegeDAO.addPrivilege(privilege);</b>
+<b class="nc">&nbsp;            return &quot;Successfully added a privilege&quot;;</b>
+&nbsp;        }
+&nbsp;        else {
+<b class="nc">&nbsp;            return &quot;unable to add privilege&quot;;</b>
+&nbsp;        }
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    public List&lt;PrivilegeDTO&gt; getAllPrivileges() throws Exception {
+&nbsp;
+<b class="nc">&nbsp;        List&lt;Privilege&gt; privileges = privilegeDAO.getAllPrivileges();</b>
+<b class="nc">&nbsp;        List&lt;PrivilegeDTO&gt; privilegeDTOs = new ArrayList&lt;&gt;();</b>
+&nbsp;
+<b class="nc">&nbsp;        for (Privilege privilege : privileges) {</b>
+<b class="nc">&nbsp;            privilegeDTOs.add(PrivilegeMapper.toDTO(privilege));</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        return privilegeDTOs;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String updatePrivilege(PrivilegeDTO privilegeDTO) throws Exception {
+&nbsp;
+<b class="nc">&nbsp;        String name = privilegeDTO.getName();</b>
+&nbsp;
+<b class="nc">&nbsp;        if (name != null &amp;&amp; name.trim().length() &gt; 3) {</b>
+&nbsp;
+<b class="nc">&nbsp;            privilegeDAO.updatePrivilege(privilegeDTO);</b>
+<b class="nc">&nbsp;            return &quot;Successfully updated a privilege&quot;;</b>
+&nbsp;        }
+&nbsp;        else {
+<b class="nc">&nbsp;            return &quot;unable to add privilege&quot;;</b>
+&nbsp;        }
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    public String deletePrivilegeById(int id) throws Exception {
+&nbsp;
+<b class="nc">&nbsp;        int returnValue = privilegeDAO.deletePrivilegeByID(id);</b>
+&nbsp;
+<b class="nc">&nbsp;        if (returnValue == 1) {</b>
+<b class="nc">&nbsp;            return &quot;Successfully deleted&quot;;</b>
+&nbsp;        }
+&nbsp;        else  {
+<b class="nc">&nbsp;            return &quot;unable to delete privilege&quot;;</b>
+&nbsp;        }
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    public Privilege getPrivilegeById(int id) throws Exception {
+&nbsp;
+<b class="nc">&nbsp;        System.out.println(&quot;Value ====== &quot;+ privilegeDAO.getPrivilegeById(id));</b>
+<b class="nc">&nbsp;        return privilegeDAO.getPrivilegeById(id);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-08-17 19:08</div>
+</div>
+</body>
+</html>

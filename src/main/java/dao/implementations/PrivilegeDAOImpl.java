@@ -32,33 +32,33 @@ public class PrivilegeDAOImpl implements PrivilegeDAO {
     @Override
     public List<Privilege> getAllPrivileges() throws Exception {
 
-        String sql = "SELECT * FROM PrivilegeS";
+        String sql = "SELECT * FROM Privileges"; // <-- Use correct table name
         List<Privilege> dbPrivileges = new ArrayList<>();
 
-        try {
-            DBConnectionUtil.getInstance();
-            try (Connection conn = DBConnectionUtil.getInstance().getConnection();
-                 PreparedStatement stmt = conn.prepareStatement(sql)) { //stmt: The PreparedStatement object that will hold the SQL query and allow you to set values and execute it.
+        try (Connection conn = DBConnectionUtil.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
 
-                ResultSet rs = stmt.executeQuery();
-                while (rs.next()) {
-                    int id = rs.getInt("id");
-                    String name = rs.getString("name");
-                    Privilege privilege = new Privilege();
-                    privilege.setId(id);
-                    privilege.setName(name);
-                    dbPrivileges.add(privilege);
-                    System.out.println(privilege);
-                }
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String name = rs.getString("name");
 
+                Privilege privilege = new Privilege();
+                privilege.setId(id);
+                privilege.setName(name);
+                dbPrivileges.add(privilege);
 
+                System.out.println(privilege); // Optional debug logging
             }
-        } catch (SQLException e) {
-            e.printStackTrace(); // You can later replace this with proper logging
-        }
-        return dbPrivileges;
 
+        } catch (SQLException e) {
+            e.printStackTrace(); // For debugging, consider replacing with a logger
+            throw new Exception("Error fetching privileges from DB", e); // Rethrow to notify caller
+        }
+
+        return dbPrivileges;
     }
+
 
     @Override
     public int updatePrivilege(PrivilegeDTO privilegeDTO) throws Exception {

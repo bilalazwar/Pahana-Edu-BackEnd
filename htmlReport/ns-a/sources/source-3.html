@@ -1,0 +1,229 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > UserMapper</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">mapper</a>
+</div>
+
+<h1>Coverage Summary for Class: UserMapper (mapper)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">UserMapper</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/32)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">UserMapper$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/33)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package mapper;
+&nbsp;
+&nbsp;import dtos.UserDto;
+&nbsp;import models.parent.User;
+&nbsp;import models.person.Admin;
+&nbsp;import models.person.Manager;
+&nbsp;import models.person.Staff;
+&nbsp;import models.person.UserType;
+&nbsp;import models.rolePrivilege.Role;
+&nbsp;
+&nbsp;import java.time.LocalDateTime;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;
+<b class="nc">&nbsp;public class UserMapper {</b>
+&nbsp;
+&nbsp;    // Domain -&gt; DTO
+&nbsp;    public static UserDto toDTO(User user) {
+<b class="nc">&nbsp;        if (user == null) return null;</b>
+&nbsp;
+<b class="nc">&nbsp;        UserDto dto = new UserDto();</b>
+<b class="nc">&nbsp;        dto.setId(user.getId());</b>
+<b class="nc">&nbsp;        dto.setUsername(user.getUsername());</b>
+<b class="nc">&nbsp;        dto.setEmail(user.getEmail());</b>
+<b class="nc">&nbsp;        dto.setFull_name(user.getFull_name());</b>
+<b class="nc">&nbsp;        dto.setRole_id(user.getRole_id());</b>
+<b class="nc">&nbsp;        dto.setActive(user.isActive());</b>
+&nbsp;
+<b class="nc">&nbsp;        return dto;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public static List&lt;UserDto&gt; toDTO(List&lt;User&gt; users) {
+<b class="nc">&nbsp;        if (users == null) return null;</b>
+&nbsp;
+<b class="nc">&nbsp;        List&lt;UserDto&gt; dtoList = new ArrayList&lt;&gt;();</b>
+&nbsp;
+<b class="nc">&nbsp;        for (User user : users) {</b>
+<b class="nc">&nbsp;            dtoList.add(toDTO(user));</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return dtoList;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;    // DTO -&gt; Domain (assumes UserType is known)
+&nbsp;    public static User toDomain(UserDto userDto, UserType userType) {
+<b class="nc">&nbsp;        if (userDto == null) return null;</b>
+&nbsp;
+&nbsp;        User user;
+&nbsp;
+<b class="nc">&nbsp;        switch (userType) {</b>
+&nbsp;            case ADMIN:
+<b class="nc">&nbsp;                user = new Admin();</b>
+&nbsp;                break;
+&nbsp;            case MANAGER:
+<b class="nc">&nbsp;                user = new Manager();</b>
+&nbsp;                break;
+&nbsp;            case STAFF:
+<b class="nc">&nbsp;                user = new Staff();</b>
+&nbsp;                break;
+&nbsp;            default:
+<b class="nc">&nbsp;                throw new IllegalArgumentException(&quot;Invalid user type: &quot; + userType);</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        user.setId(userDto.getId());</b>
+<b class="nc">&nbsp;        user.setUsername(userDto.getUsername());</b>
+<b class="nc">&nbsp;        user.setPassword(&quot;&quot;); // password not available in DTO</b>
+<b class="nc">&nbsp;        user.setRole_id(userDto.getRole_id());</b>
+<b class="nc">&nbsp;        user.setFull_name(userDto.getFull_name());</b>
+<b class="nc">&nbsp;        user.setEmail(userDto.getEmail());</b>
+<b class="nc">&nbsp;        user.setCreatedAt(LocalDateTime.now());</b>
+<b class="nc">&nbsp;        user.setUpdatedAt(LocalDateTime.now());</b>
+<b class="nc">&nbsp;        user.setLastLogin(null);</b>
+<b class="nc">&nbsp;        user.setActive(userDto.isActive());</b>
+&nbsp;
+<b class="nc">&nbsp;        return user;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-08-17 19:08</div>
+</div>
+</body>
+</html>

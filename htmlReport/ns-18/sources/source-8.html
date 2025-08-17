@@ -1,0 +1,104 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > SaleDAO</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">dao.interfaces</a>
+</div>
+
+<h1>Coverage Summary for Class: SaleDAO (dao.interfaces)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">SaleDAO</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package dao.interfaces;
+&nbsp;
+&nbsp;import models.sale.Sale;
+&nbsp;
+&nbsp;import java.sql.SQLException;
+&nbsp;import java.time.LocalDateTime;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;public interface SaleDAO {
+&nbsp;
+&nbsp;    // Create
+&nbsp;    int addSale(Sale sale) throws SQLException;
+&nbsp;
+&nbsp;    // Read
+&nbsp;    Sale getSaleById(int id) throws SQLException;
+&nbsp;    List&lt;Sale&gt; getAllSales() throws SQLException;
+&nbsp;    List&lt;Sale&gt; getSalesByCustomerId(int customerId) throws SQLException;
+&nbsp;    List&lt;Sale&gt; getSalesByUserId(int userId) throws SQLException;
+&nbsp;    List&lt;Sale&gt; getSalesBetweenDates(LocalDateTime start, LocalDateTime end) throws SQLException;
+&nbsp;    void updateSale(Sale sale) throws SQLException;
+&nbsp;    void deleteSale(int id) throws SQLException;
+&nbsp;
+&nbsp;    // Aggregate / Extra
+&nbsp;    double getTotalSalesAmount() throws SQLException;
+&nbsp;    double getTotalSalesByUserId(int userId) throws SQLException;
+&nbsp;    double getTotalSalesByCustomerId(int customerId) throws SQLException;
+&nbsp;    int getSaleCount() throws SQLException;
+&nbsp;    int getSaleCountByUserId(int userId) throws SQLException;
+&nbsp;
+&nbsp;}
+&nbsp;
+&nbsp;//        | id | customer_id | sale_date           | total _amount |
+&nbsp;//        | -- | ------------| ------------------- | ------------- |
+&nbsp;//        | 1  | 1           | 2025-08-01 10:00:00 | 5500.0        |
+&nbsp;//        | 2  | 2           | 2025-08-02 14:30:00 | 3000.0        |
+&nbsp;//        | 3  | 3           | 2025-08-03 09:15:00 | 5700.0        |
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-08-17 19:08</div>
+</div>
+</body>
+</html>
