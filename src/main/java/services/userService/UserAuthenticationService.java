@@ -10,7 +10,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import models.parent.User;
 import models.person.UserType;
 import models.rolePrivilege.RolePrivilege;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -75,6 +74,7 @@ public class UserAuthenticationService {
                 break;
             case 3:
                 userType = UserType.STAFF;
+                break;
             default:
                 throw new IllegalArgumentException("Invalid role_id:");
         };

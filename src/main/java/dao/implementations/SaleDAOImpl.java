@@ -215,6 +215,7 @@ public class SaleDAOImpl implements SaleDAO {
         return 0;
     }
 
+
     @Override
     public int getSaleCountByUserId(int userId) throws SQLException {
         String sql = "SELECT COUNT(*) FROM sales WHERE user_id = ?";
@@ -228,6 +229,20 @@ public class SaleDAOImpl implements SaleDAO {
             }
         }
         return 0;
+    }
+
+    private double getTotalAmount() throws SQLException {
+
+        String sql = "SELECT SUM(total_amount) AS total_sales FROM sales";
+        try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getDouble(1); // Or rs.getDouble("total_sales");
+            } else {
+                return 0.0; // No rows returned
+            }
+        }
     }
 
     // Helper method to convert ResultSet to Sale object

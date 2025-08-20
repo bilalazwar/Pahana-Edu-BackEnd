@@ -16,7 +16,7 @@ public class CustomerService {
     public void addCustomer(Customer customer) throws Exception {
 
         if (customer == null) {
-            throw new IllegalArgumentException("Customer is null");
+            throw new IllegalArgumentException("Customer details are empty");
         }
 
         // Validate name

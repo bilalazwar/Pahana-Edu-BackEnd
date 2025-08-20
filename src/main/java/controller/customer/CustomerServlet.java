@@ -16,9 +16,16 @@ import java.util.List;
 @WebServlet("/customers/*")
 public class CustomerServlet extends HttpServlet {
 
-    CustomerDAOImpl customerDAOImpl = new CustomerDAOImpl();
-    private final CustomerService customerService = new CustomerService(customerDAOImpl);
-    private final ObjectMapper objectMapper = new ObjectMapper(); // Jackson for JSON
+
+    private CustomerService customerService;
+    private ObjectMapper objectMapper; // Jackson for JSON
+
+    @Override
+    public void init() throws ServletException {
+        CustomerDAOImpl customerDAOImpl = new CustomerDAOImpl();
+        customerService = new CustomerService(customerDAOImpl);
+        objectMapper = new ObjectMapper();
+    }
 
     // POST http://localhost:8080/PahanaEduBackEnd/customers
     @Override
@@ -41,6 +48,7 @@ public class CustomerServlet extends HttpServlet {
     // GET http://localhost:8080/PahanaEduBackEnd/customers (get all)
     // GET http://localhost:8080/PahanaEduBackEnd/customers/{id} (get by id)
     // GET http://localhost:8080/PahanaEduBackEnd/customers?mobileNumber={} (get by mobile)
+    // GET http://localhost:8080/PahanaEduBackEnd/customers/count   (return total registered customers)
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("application/json");
@@ -53,7 +61,14 @@ public class CustomerServlet extends HttpServlet {
             if (pathInfo != null && !pathInfo.isEmpty()) {
                 // Handle GET by ID (e.g., /customers/123)
                 String[] pathParts = pathInfo.split("/");
-                if (pathParts.length > 1) {
+
+                if (pathParts.length > 1 && "count".equals(pathParts[1])) {
+                    // Handle GET customer count (e.g., /customers/count)
+                    int count = customerService.getCustomerCount();
+                    response.getWriter().write("{\"count\": " + count + "}");
+                    return;
+                }
+                else if (pathParts.length > 1) {
                     int id = Integer.parseInt(pathParts[1]);
                     Customer customer = customerService.getCustomerById(id);
                     if (customer != null) {

@@ -1,6 +1,8 @@
 package services.saleService;
 
+import dao.implementations.ProductDAOImpl;
 import dao.implementations.SaleItemsDAOImpl;
+import dao.interfaces.ProductDAO;
 import dao.interfaces.SaleDAO;
 import dao.interfaces.SaleItemsDAO;
 import models.sale.Sale;
@@ -13,72 +15,25 @@ import java.util.List;
 
 public class SaleService {
 
-    private final SaleDAO saleDAO;
+    private SaleDAO saleDAO;
+    private SaleItemsDAO saleItemsDAO;
+    private SaleItemService saleItemService;
 
     public SaleService(SaleDAO saleDAO, SaleItemsDAO saleItemsDAO) {
         this.saleDAO = saleDAO;
-    }
-
-    private final SaleItemsDAO saleItemsDAO = new SaleItemsDAOImpl();
-    private final SaleItemService saleItemService = new SaleItemService(saleItemsDAO);
-
-    public void createSale1(Sale sale) throws Exception {
-        if (sale == null) {
-            throw new Exception("Sale is null.");
-        }
-        if(sale.getCustomerId() == 0){
-            throw new Exception("Customer Id is null.");
-        }
-
-        try {
-
-            List<SaleItems> saleItemsList = sale.getItems();
-            for(SaleItems saleItem1 : saleItemsList){
-
-//                BigDecimal unitPrice = BigDecimal.valueOf(saleItem1.getUnitePrice());
-//                BigDecimal quantity = BigDecimal.valueOf(saleItem1.getQuantity());
-//                BigDecimal totalPrice = unitPrice.multiply(quantity);
-
-
-                Double unitPrice, totalPrice = 0.00;
-                int quantity = 0;
-                unitPrice = saleItem1.getUnitePrice();
-                quantity = saleItem1.getQuantity();
-                totalPrice = unitPrice * quantity;
-
-                BigDecimal price = new BigDecimal(totalPrice);
-
-
-                saleItem1.setTotalPrice(price);
-
-            }
-
-            BigDecimal totalAmount1 = BigDecimal.ZERO;
-            for(SaleItems saleItems : saleItemsList){
-                totalAmount1 = totalAmount1.add(saleItems.getTotalPrice());
-                System.out.println("Individual Sale Items Price == "+ totalAmount1);
-            }
-
-            sale.setTotalAmount(totalAmount1);
-            int generatedId = saleDAO.addSale(sale);
-
-            if(generatedId != -1){
-
-                for(SaleItems saleItems : saleItemsList){
-                    saleItems.setSaleId(generatedId);
-//                    saleItemsDAO.addSaleItem(saleItems);
-                    saleItemService.addSaleItem(saleItems);
-                    System.out.println(saleItems.getProductName());
-                }
-            }
-        }
-        catch (SQLException e) {
-            e.printStackTrace(); // Can replace with Logger
-            throw new Exception("Failed to create sale: " + e.getMessage());
-        }
+        saleItemsDAO = new SaleItemsDAOImpl();
+        ProductDAO productDAO = new ProductDAOImpl();
+        saleItemService = new SaleItemService(saleItemsDAO, productDAO);
     }
 
     public void createSale(Sale sale) throws Exception {
+
+        if (sale.getItems() == null || sale.getItems().isEmpty()) {
+            throw new IllegalArgumentException("Sale must contain at least one item.");
+        }
+        if(sale.getCustomerId() == 0) {
+            throw new IllegalArgumentException("Customer id must not be null.");
+        }
 
         List<SaleItems> saleItemsList = sale.getItems();
 
@@ -88,6 +43,10 @@ public class SaleService {
             BigDecimal unitPrice = BigDecimal.valueOf(saleItem.getUnitePrice());
             BigDecimal quantity = BigDecimal.valueOf(saleItem.getQuantity());
             BigDecimal itemTotal = unitPrice.multiply(quantity);
+
+            if (quantity.compareTo(BigDecimal.ONE) < 0) {
+                throw new IllegalArgumentException("Quantity must be at least 1");
+            }
 
             saleItem.setTotalPrice(itemTotal); //
             totalSaleAmount = totalSaleAmount.add(itemTotal);

@@ -20,12 +20,13 @@ import java.util.Map;
 public class RolePrivilegeServlet extends HttpServlet {
 
     private RolePrivilegeService rolePrivilegeService;
-    private final ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper mapper;
 
     @Override
     public void init() throws ServletException {
         RolePrivilegeDAO rolePrivilegeDAO = new RolePrivilegeImpl();
         this.rolePrivilegeService = new RolePrivilegeService(rolePrivilegeDAO);
+        mapper = new ObjectMapper();
     }
 
     // GET http://localhost:8080/PahanaEduBackEnd/role-privileges (get all mappings)

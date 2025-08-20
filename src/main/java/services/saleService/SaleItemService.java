@@ -11,11 +11,11 @@ import java.util.List;
 public class SaleItemService {
 
     private final SaleItemsDAO saleItemsDAO;
-    ProductDAO  productDAO = new ProductDAOImpl();
-//    ProductDAO  productDAO;
-    public SaleItemService(SaleItemsDAO saleItemsDAO) {
+    ProductDAO  productDAO;
+
+    public SaleItemService(SaleItemsDAO saleItemsDAO, ProductDAO  productDAO) {
         this.saleItemsDAO = saleItemsDAO;
-//        this.productDAO =  new ProductDAOImpl();
+        this.productDAO =  productDAO;
     }
 
     public void addSaleItem(SaleItems saleItems) throws Exception {

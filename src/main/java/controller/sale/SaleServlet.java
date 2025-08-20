@@ -1,8 +1,10 @@
 package controller.sale;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dao.implementations.ProductDAOImpl;
 import dao.implementations.SaleDAOImpl;
 import dao.implementations.SaleItemsDAOImpl;
+import dao.interfaces.ProductDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -21,12 +23,19 @@ import java.util.List;
 @WebServlet("/sales/*")
 public class SaleServlet extends HttpServlet {
 
-    SaleDAOImpl saleDAOImpl = new SaleDAOImpl();
-    SaleItemsDAOImpl saleItemsDAOImpl = new SaleItemsDAOImpl();
+    private SaleService saleService;
+    SaleItemService saleItemService;
+    ObjectMapper objectMapper;
 
-    private final SaleService saleService = new SaleService(saleDAOImpl, saleItemsDAOImpl);
-    private final SaleItemService saleItemService = new SaleItemService(saleItemsDAOImpl);
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Override
+    public void init() throws ServletException {
+        SaleDAOImpl saleDAOImpl = new SaleDAOImpl();
+        SaleItemsDAOImpl saleItemsDAOImpl = new SaleItemsDAOImpl();
+        saleService = new SaleService(saleDAOImpl, saleItemsDAOImpl);
+        ProductDAO productDAO = new ProductDAOImpl();
+        saleItemService = new SaleItemService(saleItemsDAOImpl, productDAO);
+        objectMapper = new ObjectMapper();
+    }
 
     // POST http://localhost:8080/PahanaEduBackEnd/sales
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -55,6 +64,7 @@ public class SaleServlet extends HttpServlet {
     // GET http://localhost:8080/PahanaEduBackEnd/sales/customer/{customerId} (by customer)
     // GET http://localhost:8080/PahanaEduBackEnd/sales/user/{userId} (by user)
     // GET http://localhost:8080/PahanaEduBackEnd/sales/date-range?start=DATE&end=DATE (by date range)
+    // GET http://localhost:8080/PahanaEduBackEnd/sales/total (get total sales)
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
@@ -84,6 +94,11 @@ public class SaleServlet extends HttpServlet {
                 int userId = Integer.parseInt(pathInfo.substring(6));
                 List<Sale> sales = saleService.getSalesByUserId(userId);
                 response.getWriter().write(objectMapper.writeValueAsString(sales));
+            }
+            else if (pathInfo.equals("/total")) {
+                // Get total sales amount
+                double totalSales = saleService.getTotalSalesAmount();
+                response.getWriter().write("{\"total_sales\": " + totalSales + "}");
             }
             else if (pathInfo.equals("/date-range")) {
                 // Get by date range

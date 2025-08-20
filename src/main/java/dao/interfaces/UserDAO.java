@@ -15,3 +15,5 @@ public interface UserDAO {
     int verifyUserPassword(String username, String enteredPassword, int roleId) throws Exception;
     void updatePassword(int userId, String newPassword) throws Exception;
 }
+
+

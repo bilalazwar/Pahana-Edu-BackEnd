@@ -16,32 +16,26 @@ import models.parent.User;
 import services.userService.UserAuthenticationService;
 import services.userService.UserManagementService;
 import services.userService.UserRegistrationService;
-import services.userService.UserService;
 import java.io.IOException;
 import java.util.List;
 
 @WebServlet("/users/*")
 public class UserServlet extends HttpServlet {
 
-//    private final UserService userService = new UserService();
-    private final ObjectMapper objectMapper;
+    private ObjectMapper objectMapper;
+    private UserAuthenticationService userAuthenticationService;
+    private UserManagementService userManagementService;
+    private UserRegistrationService userRegistrationService;
 
-    private final UserAuthenticationService userAuthenticationService;
-    private final UserDAO userDAO;
-    private final RolePrivilegeDAO rolePrivilegeDAO;
-
-    private final UserManagementService userManagementService;
-    private final UserRegistrationService userRegistrationService;
-
-    public UserServlet() {
+    @Override
+    public void init() throws ServletException {
         this.objectMapper = new ObjectMapper();
-        this.userDAO = new UserDAOImpl();
-        this.rolePrivilegeDAO = new RolePrivilegeImpl();
-        this.userAuthenticationService = new UserAuthenticationService(userDAO,rolePrivilegeDAO, objectMapper);
+        UserDAO userDAO = new UserDAOImpl();
+        RolePrivilegeDAO rolePrivilegeDAO = new RolePrivilegeImpl();
+        this.userAuthenticationService = new UserAuthenticationService(userDAO, rolePrivilegeDAO, objectMapper);
 
         this.userManagementService = new UserManagementService(userDAO, objectMapper);
         this.userRegistrationService = new UserRegistrationService(userDAO,objectMapper);
-
     }
 
     // POST http://localhost:8080/PahanaEduBackEnd/users/register

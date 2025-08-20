@@ -2,6 +2,7 @@ package controller.product;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dao.implementations.ProductDAOImpl;
+import dao.interfaces.ProductDAO;
 import dtos.ProductDto;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -17,9 +18,15 @@ import java.util.List;
 @WebServlet("/products/*")
 public class ProductServlet extends HttpServlet {
 
-    ProductDAOImpl productDAOImpl = new ProductDAOImpl();
-    private final ProductService productService = new ProductService(productDAOImpl);
-    private final ObjectMapper objectMapper = new ObjectMapper(); // Jackson for JSON
+    ProductService productService;
+    private ObjectMapper objectMapper; // Jackson for JSON
+
+    @Override
+    public void init() throws ServletException {
+        ProductDAO productDAO = new ProductDAOImpl();
+        productService = new ProductService(productDAO);
+        objectMapper = new ObjectMapper();
+    }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

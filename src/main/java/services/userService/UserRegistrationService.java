@@ -13,8 +13,8 @@ import java.time.LocalDateTime;
 
 public class UserRegistrationService {
 
-    private UserDAO userDAO;
-    private ObjectMapper objectMapper;
+    private final UserDAO userDAO;
+    private final ObjectMapper objectMapper;
 
     public UserRegistrationService(UserDAO userDAO, ObjectMapper objectMapper) {
         this.userDAO = userDAO;
@@ -41,6 +41,7 @@ public class UserRegistrationService {
         userDAO.addUser(user);
     }
     private UserType resolveUserType(int roleId) {
+//        System.out.println("Role id = " + roleId);
         UserType userType;
         switch (roleId) {
             case 1:
@@ -51,6 +52,7 @@ public class UserRegistrationService {
                 break;
             case 3:
                 userType = UserType.STAFF;
+                break;
             default:
                 throw new IllegalArgumentException("Invalid role_id:");
         };

@@ -32,7 +32,7 @@ public class PrivilegeDAOImpl implements PrivilegeDAO {
     @Override
     public List<Privilege> getAllPrivileges() throws Exception {
 
-        String sql = "SELECT * FROM Privileges"; // <-- Use correct table name
+        String sql = "SELECT * FROM Privileges";
         List<Privilege> dbPrivileges = new ArrayList<>();
 
         try (Connection conn = DBConnectionUtil.getInstance().getConnection();

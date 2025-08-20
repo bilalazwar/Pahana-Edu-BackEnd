@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class MockProductDAOImpl implements ProductDAO {
 
-    private Map<Integer, Product> productsDatabase = new HashMap<>();
+    private final Map<Integer, Product> productsDatabase = new HashMap<>();
     private int idCounter = 1;  // to simulate auto-generated IDs for products
 
     @Override

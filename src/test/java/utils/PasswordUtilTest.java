@@ -18,7 +18,7 @@ public class PasswordUtilTest extends TestCase {
 
         // Get the hash for the password
         String actualHash = PasswordUtil.hashPassword(password);
-        System.out.println("Hash Password: " + actualHash);
+//        System.out.println("Hash Password: " + actualHash);
 
         // Assert the result matches the expected hash
         assertEquals(expectedHash, actualHash);

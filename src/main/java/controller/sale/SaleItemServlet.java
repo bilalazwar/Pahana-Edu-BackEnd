@@ -1,7 +1,9 @@
 package controller.sale;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dao.implementations.ProductDAOImpl;
 import dao.implementations.SaleItemsDAOImpl;
+import dao.interfaces.ProductDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -16,9 +18,16 @@ import java.util.List;
 @WebServlet("/sale-items/*")
 public class SaleItemServlet extends HttpServlet {
 
-    SaleItemsDAOImpl saleItemsDAOImpl = new SaleItemsDAOImpl();
-    private final SaleItemService saleItemService = new SaleItemService(saleItemsDAOImpl);
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private SaleItemService saleItemService;
+    private ObjectMapper objectMapper;
+
+    @Override
+    public void init() throws ServletException {
+        SaleItemsDAOImpl saleItemsDAOImpl = new SaleItemsDAOImpl();
+        ProductDAO productDAO = new ProductDAOImpl();
+        saleItemService = new SaleItemService(saleItemsDAOImpl, productDAO);
+        objectMapper = new ObjectMapper();
+    }
 
     // POST http://localhost:8080/PahanaEduBackEnd/sale-items
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

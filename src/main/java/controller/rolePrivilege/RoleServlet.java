@@ -19,11 +19,12 @@ import java.util.Map;
 public class RoleServlet extends HttpServlet {
 
     private RoleService roleService;
-    private final ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper mapper;
 
     @Override
     public void init() throws ServletException {
         this.roleService = new RoleService(new RoleDAOImpl());
+        mapper = new ObjectMapper();
     }
 
     private void writeJson(HttpServletResponse response, Object data) throws IOException {
